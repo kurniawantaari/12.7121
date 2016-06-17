@@ -1,4 +1,5 @@
 <?php
+
 return [
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'components' => [
@@ -6,8 +7,7 @@ return [
             'class' => 'yii\caching\FileCache',
         ],
         'authManager' => [
-                           'class' => 'yii\rbac\DbManager',
-                           'defaultRoles' => ['guest'],
-          ],
+            'class' => 'yii\rbac\DbManager',
+        ],
     ],
 ];

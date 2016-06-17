@@ -25,11 +25,9 @@ use yii\web\IdentityInterface;
 class User extends ActiveRecord implements IdentityInterface {
 
     const STATUS_DELETED = 0;
+    const STATUS_NOTACTIVE = 5;
     const STATUS_ACTIVE = 10;
-    const ROLE_GUEST = 10;
-    const ROLE_SBR = 20;
-    const ROLE_ADMIN = 40;
-
+    
     /**
      * @inheritdoc
      */
@@ -51,11 +49,9 @@ class User extends ActiveRecord implements IdentityInterface {
      */
     public function rules() {
         return [
-            ['status', 'default', 'value' => self::STATUS_ACTIVE],
-            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
-            ['role', 'default', 'value' => 10],
-            ['role', 'in', 'range' => [self::ROLE_GUEST, self::ROLE_SBR, self::ROLE_ADMIN]],
-        ];
+            ['status', 'default', 'value' => self::STATUS_NOTACTIVE],
+            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_NOTACTIVE,self::STATUS_DELETED]],
+                    ];
     }
 
     /**
@@ -98,6 +94,23 @@ class User extends ActiveRecord implements IdentityInterface {
                     'status' => self::STATUS_ACTIVE,
         ]);
     }
+    
+    /**
+     * Finds user by account activation token
+     *
+     * @param string $token account activation token
+     * @return static|null
+     */
+    public static function findByAccountActivationToken($token) {
+        if (!static::isAccountActivationValid($token)) {
+            return null;
+        }
+
+        return static::findOne([
+                    'account_activation_token' => $token,
+                    'status' => self::STATUS_NOTACTIVE,
+        ]);
+    }
 
     /**
      * Finds out if password reset token is valid
@@ -112,6 +125,21 @@ class User extends ActiveRecord implements IdentityInterface {
 
         $timestamp = (int) substr($token, strrpos($token, '_') + 1);
         $expire = Yii::$app->params['user.passwordResetTokenExpire'];
+        return $timestamp + $expire >= time();
+    }
+     /**
+     * Finds out if password reset token is valid
+     *
+     * @param string $token password reset token
+     * @return boolean
+     */
+    public static function isAccountActivationValid($activate) {
+        if (empty($activate)) {
+            return false;
+        }
+
+        $timestamp = (int) substr($activate, strrpos($activate, '_') + 1);
+        $expire = Yii::$app->params['user.accountActivationExpire'];
         return $timestamp + $expire >= time();
     }
 
@@ -175,25 +203,18 @@ class User extends ActiveRecord implements IdentityInterface {
     public function removePasswordResetToken() {
         $this->password_reset_token = null;
     }
-
-    public static function isUserAdmin($username) {
-        if (static::findOne(['username' => $username, 'role' => self::ROLE_ADMIN])) {
-
-            return true;
-        } else {
-
-            return false;
-        }
+     /**
+     * Generates new account activation token
+     */
+    public function generateAccountActivation() {
+        $this->account_activation_token= Yii::$app->security->generateRandomString() . '_' . time();
     }
 
-    public static function isSBRTeam($username) {
-        if (static::findOne(['username' => $username, 'role' => self::ROLE_SBR])) {
-
-            return true;
-        } else {
-
-            return false;
-        }
+    /**
+     * Removes account activation token
+     */
+    public function removeAccountActivation() {
+        $this->account_activation_token = null;
     }
 
-}
+    }

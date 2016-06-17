@@ -33,7 +33,7 @@ class SignupForm extends Model
 
             ['password', 'required'],
             ['password', 'string', 'min' => 6],
-        ];
+                    ];
     }
 
     /**
@@ -52,7 +52,7 @@ class SignupForm extends Model
         $user->email = $this->email;
         $user->setPassword($this->password);
         $user->generateAuthKey();
-        
+              
         return $user->save() ? $user : null;
     }
 }
