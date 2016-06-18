@@ -5,6 +5,7 @@ namespace console\controllers;
 
 use Yii;
 use yii\console\Controller;
+use common\models\User;
 
 class RbacController extends Controller {
 
@@ -34,8 +35,8 @@ class RbacController extends Controller {
         $auth->addChild($admin, $manageUsers);
         
         //assign default role. first one to signp is admin and second one is sbr team
-        $auth->assign($admin, 1);
-        $auth->assign($sbr, 2);
+        //$auth->assign($admin, 1);
+        //$auth->assign($sbr, 2);
     }
     public function actionAssign($role, $username) {
        //$user = User::find()->where(['username' => $username])->one();
