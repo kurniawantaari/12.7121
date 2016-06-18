@@ -42,6 +42,7 @@ class AccountActivationForm extends Model
     public function accountActivation()
     {
         $user = $this->_user;
+        $user->status=10;
         $user->removeAccountActivationToken();
 
         return $user->save(false);

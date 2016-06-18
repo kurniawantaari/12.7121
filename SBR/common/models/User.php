@@ -223,8 +223,7 @@ class User extends ActiveRecord implements IdentityInterface {
      * Removes account activation token
      */
     public function removeAccountActivationToken() {
-       $this->status=10;
-       $this->account_activation_token = null;
+              $this->account_activation_token = null;
        
     }
 
