@@ -27,7 +27,7 @@ class SiteController extends Controller {
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup'],
+                'only' => ['logout', 'signup','about'],
                 'rules' => [ [
                         'actions' => ['signup'],
                         'allow' => true,
@@ -38,11 +38,11 @@ class SiteController extends Controller {
                         'allow' => true,
                         'roles' => ['@'],
                     ],
-//                    [
-//                        'actions' => ['about'],
-//                        'allow' => true,
-//                        'roles' => ['manageUsers'],
-//                    ],
+                    [
+                        'actions' => ['about'],
+                        'allow' => true,
+                        'roles' => ['manageGivenTable'],
+                    ],
                 ],
             ],
             'verbs' => [
