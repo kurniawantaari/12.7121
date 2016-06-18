@@ -15,6 +15,7 @@ use yii\web\IdentityInterface;
  * @property string $username
  * @property string $password_hash
  * @property string $password_reset_token
+ * @property string $account_activation_token
  * @property string $email
  * @property string $auth_key
  * @property integer $status
@@ -128,20 +129,20 @@ class User extends ActiveRecord implements IdentityInterface {
         return $timestamp + $expire >= time();
     }
      /**
-     * Finds out if password reset token is valid
+     * Finds out if account activation token is valid
      *
-     * @param string $token password reset token
+     * @param string $token account activation token
      * @return boolean
      */
-    public static function isAccountActivationValid($activate) {
-        if (empty($activate)) {
+    public static function isAccountActivationValid($token) {
+        if (empty($token)) {
             return false;
         }
-
-        $timestamp = (int) substr($activate, strrpos($activate, '_') + 1);
-        $expire = Yii::$app->params['user.accountActivationExpire'];
-        return $timestamp + $expire >= time();
-    }
+//valid if token exist
+        if(!static::findOne(['account_activation_token' => $token]))
+            return false;
+         else return true;
+            }
 
     /**
      * @inheritdoc
@@ -194,7 +195,11 @@ class User extends ActiveRecord implements IdentityInterface {
      * Generates new password reset token
      */
     public function generatePasswordResetToken() {
-        $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
+         $randomString= Yii::$app->security->generateRandomString() . '_' . time();
+        if(static::findOne(['password_reset_token' => $randomString])==null)//cari token yang sama dengan string yang dibuat. jika tidak ketemu(=null)
+		$this->password_reset_token=$randomString; 
+	else
+		$this->generatePasswordResetToken();
     }
 
     /**
@@ -206,15 +211,21 @@ class User extends ActiveRecord implements IdentityInterface {
      /**
      * Generates new account activation token
      */
-    public function generateAccountActivation() {
-        $this->account_activation_token= Yii::$app->security->generateRandomString() . '_' . time();
+    public function generateAccountActivationToken() {
+        $randomString= Yii::$app->security->generateRandomString() . '_' . time();
+        if(static::findOne(['account_activation_token' => $randomString])==null)
+		$this->account_activation_token=$randomString;
+	else
+		$this->generateAccountActivationToken();
     }
-
+    
     /**
      * Removes account activation token
      */
-    public function removeAccountActivation() {
-        $this->account_activation_token = null;
+    public function removeAccountActivationToken() {
+       $this->status=10;
+       $this->account_activation_token = null;
+       
     }
 
     }

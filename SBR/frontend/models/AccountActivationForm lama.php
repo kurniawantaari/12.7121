@@ -1,4 +1,5 @@
 <?php
+
 namespace frontend\models;
 
 use yii\base\Model;
@@ -6,25 +7,16 @@ use yii\base\InvalidParamException;
 use common\models\User;
 
 /**
- * Password reset form
+ * Account Activation form
  */
-class AccountActivationForm extends Model
-{
+class AccountActivationForm extends Model {
+
         /**
      * @var \common\models\User
      */
     private $_user;
 
-
-    /**
-     * Creates a form model given a token.
-     *
-     * @param string $token
-     * @param array $config name-value pairs that will be used to initialize the object properties
-     * @throws \yii\base\InvalidParamException if token is empty or not valid
-     */
-    public function __construct($token, $config = [])
-    {
+    public function __construct($token, $config = []) {
         if (empty($token) || !is_string($token)) {
             throw new InvalidParamException('Account activation token cannot be blank.');
         }
@@ -34,16 +26,22 @@ class AccountActivationForm extends Model
         }
         parent::__construct($config);
     }
-    /**
-     * Resets password.
-     *
-     * @return boolean if password was reset.
-     */
-    public function accountActivation()
+ public function rules()
     {
+        return [
+          
+        ];
+    }
+    /**
+     * Activate account.
+     *
+     * @return boolean if account was activate.
+     */
+    public function activateAccount() {
         $user = $this->_user;
+        $user->status=10;
         $user->removeAccountActivationToken();
-
         return $user->save(false);
     }
+
 }

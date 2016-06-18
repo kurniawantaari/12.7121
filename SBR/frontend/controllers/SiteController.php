@@ -11,6 +11,7 @@ use yii\filters\AccessControl;
 use common\models\LoginForm;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
+use frontend\models\AccountActivationForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
 
@@ -26,7 +27,7 @@ class SiteController extends Controller {
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup','about'],
+                'only' => ['logout', 'signup'],
                 'rules' => [ [
                         'actions' => ['signup'],
                         'allow' => true,
@@ -37,11 +38,11 @@ class SiteController extends Controller {
                         'allow' => true,
                         'roles' => ['@'],
                     ],
-                    [
-                        'actions' => ['about'],
-                        'allow' => true,
-                        'roles' => ['manageUsers'],
-                    ],
+//                    [
+//                        'actions' => ['about'],
+//                        'allow' => true,
+//                        'roles' => ['manageUsers'],
+//                    ],
                 ],
             ],
             'verbs' => [
@@ -152,9 +153,26 @@ class SiteController extends Controller {
         $model = new SignupForm();
         if ($model->load(Yii::$app->request->post())) {
             if ($user = $model->signup()) {
-                if (Yii::$app->getUser()->login($user)) {
-                    return $this->goHome();
+                //edited
+                //uncomment this after admin is created
+                $email = Yii::$app
+                        ->mailer
+                        ->compose(
+                                ['html' => 'accountActivationToken-html', 'text' => 'accountActivationToken-text'], ['user' => $user]
+                        )
+                        ->setFrom([Yii::$app->params['supportEmail'] => Yii::$app->name . ' robot'])
+                        ->setTo($user->email)
+                        ->setSubject(Yii::$app->name . ':Sign Up Confirmation')
+                        ->send();
+                if ($email) {
+                    Yii::$app->getSession()->setFlash('success', 'Sign Up success. Check your email to activate your account!');
+                } else {
+                    Yii::$app->getSession()->setFlash('warning', 'Sign Up failed. Please try again or contact administrator.');
                 }
+                //end-edited
+//                if (Yii::$app->getUser()->login($user)) {
+                return $this->goHome();
+//                }
             }
         }
 
@@ -209,4 +227,53 @@ class SiteController extends Controller {
                     'model' => $model,
         ]);
     }
+
+//    public function actionAccountActivation($token) {//modified dengan tutorial di internet. berhasil mengaktifkan user
+//        $user = \common\models\User::find()->where([
+//                    'account_activation_token' => $token,
+//                    'status' => 5,
+//                ])->one();
+//        if (!empty($user)) {
+//            $user->status = 10;
+//            $user->account_activation_token=null;
+//            $user->save();
+//            Yii::$app->session->setFlash('success', 'Account is activated.');
+//        } else {
+//            Yii::$app->getSession()->setFlash('warning', 'Failed to activate account. Account Activation token might be invalid.');
+//        }
+//        return $this->goHome();
+//    }
+
+public function actionAccountActivation($token) {//aseli
+        try {
+            $model = new AccountActivationForm($token);
+        } catch (InvalidParamException $e) {
+            throw new BadRequestHttpException($e->getMessage());
+        }
+
+        if ( $model->validate() && $model->accountActivation()) {
+            Yii::$app->session->setFlash('success', 'Account is activated.');
+
+            return $this->goHome();
+        }
+
+        return $this->render('accountActivation', [
+                    'model' => $model,
+        ]);
+    }
+//    public function actionRequestAccountActivation() {
+//        $model = new AccountActivationRequestForm();
+//        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+//            if ($model->sendEmail()) {
+//                Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
+//                return $this->goHome();
+//            } else {
+//                Yii::$app->session->setFlash('error', 'Sorry, we are unable to proceed your account activation request for email provided.');
+//            }
+//        }
+//
+//        return $this->render('requestAccountActivationToken', [
+//                    'model' => $model,
+//        ]);
+//    }
 }

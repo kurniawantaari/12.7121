@@ -24,14 +24,14 @@ class AccountActivationRequestForm extends Model
             ['email', 'email'],
             ['email', 'exist',
                 'targetClass' => '\common\models\User',
-                'filter' => ['status' => User::STATUS_ACTIVE],
+                'filter' => ['status' => User::STATUS_NONACTIVE],
                 'message' => 'There is no user with such email.'
             ],
         ];
     }
 
     /**
-     * Sends an email with a link, for resetting the password.
+     * Sends an email with a link, for activating the account.
      *
      * @return boolean whether the email was send
      */
@@ -48,7 +48,7 @@ class AccountActivationRequestForm extends Model
         }
         
         if (!User::isAccountActivationValid($user->account_activation_token)) {
-            $user->generateAccountActivation();
+            $user->generateAccountActivationToken();
         }
         
         if (!$user->save()) {
