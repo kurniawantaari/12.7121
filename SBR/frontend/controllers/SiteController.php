@@ -11,7 +11,7 @@ use yii\filters\AccessControl;
 use common\models\LoginForm;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
-use frontend\models\AccountActivationForm;
+use frontend\models\AccountActivation;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
 
@@ -244,14 +244,14 @@ class SiteController extends Controller {
 //        return $this->goHome();
 //    }
 
-public function actionAccountActivation($token) {//aseli
+public function actionAccountActivation($token) {
         try {
-            $model = new AccountActivationForm($token);
+            $model = new AccountActivation($token);
         } catch (InvalidParamException $e) {
             throw new BadRequestHttpException($e->getMessage());
         }
 
-        if ( $model->validate() && $model->accountActivation()) {
+        if ($model->accountActivation()) {
             Yii::$app->session->setFlash('success', 'Account is activated.');
 
             return $this->goHome();

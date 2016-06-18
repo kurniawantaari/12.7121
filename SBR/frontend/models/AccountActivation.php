@@ -8,7 +8,7 @@ use common\models\User;
 /**
  * Password reset form
  */
-class AccountActivationForm extends Model
+class AccountActivation extends Model
 {
         /**
      * @var \common\models\User

@@ -9,7 +9,7 @@ use common\models\User;
 /**
  * Account Activation form
  */
-class AccountActivationForm extends Model {
+class AccountActivation extends Model {
 
         /**
      * @var \common\models\User

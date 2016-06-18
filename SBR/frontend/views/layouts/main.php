@@ -21,7 +21,7 @@ AppAsset::register($this);
         <link href='https://fonts.googleapis.com/css?family=Lato:400,700italic,700,400italic' rel='stylesheet' type='text/css'>
         
           <?= Html::csrfMetaTags() ?>
-        <title><?= Html::encode($this->title) ?></title>
+        <title>SBR-<?= Html::encode($this->title) ?></title>
         <?php $this->head() ?>
         
     </head>
