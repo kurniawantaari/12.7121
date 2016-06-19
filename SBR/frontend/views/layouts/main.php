@@ -43,6 +43,7 @@ AppAsset::register($this);
                 ['label' => 'ABOUT', 'url' => ['/site/about']],
                 ['label' => 'CONTACT', 'url' => ['/site/contact']],
                 ['label' => 'GENERATE TABLE', 'url' => ['/site/generate-table']],
+                ['label' => 'PROFILE', 'url' => ['/site/account-detail']],
             ];
             if (Yii::$app->user->isGuest) {
                 $menuItems[] = ['label' => 'SIGNUP', 'url' => ['/site/signup']];
@@ -76,9 +77,13 @@ Breadcrumbs::widget([
 
         <footer class="footer">
             <div class="container">
-                <p class="pull-left">&copy; Indonesian Statistical Business Register <?= date('Y') ?></p>
-
-                <!--<p class="pull-right"><?= Yii::powered() ?></p>-->
+                <p>&copy; Indonesian Statistical Business Register <?= date('Y') ?></p>
+                <p> Badan Pusat Statistik</p>
+                <p>(BPS - Statistics Indonesia)</p>
+                <p>Jl. Dr. Sutomo 6-8 Jakarta 10710 Indonesia, Telp (62-21) 3841195, 3842508, 3810291, Faks (62-21) 3857046</p>
+                <p>facebook https://www.facebook.com/pages/Badan-Pusat-Statistik/1394866840805957</p>
+                <p>twitter  https://www.twitter.com/bps_statistics</p>
+                 <!--<p class="pull-right"><?= Yii::powered() ?></p>-->
             </div>
         </footer>
 

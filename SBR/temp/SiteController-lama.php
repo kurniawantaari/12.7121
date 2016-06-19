@@ -15,10 +15,6 @@ use frontend\models\AccountActivation;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
 use frontend\models\EditUsernameForm;
-use frontend\models\EditEmailForm;
-use frontend\models\EditPasswordForm;
-use frontend\models\EditStatusForm;
-use frontend\models\EditRoleForm;
 
 /**
  * Site controller
@@ -233,6 +229,22 @@ class SiteController extends Controller {
         ]);
     }
 
+//    public function actionAccountActivation($token) {//modified dengan tutorial di internet. berhasil mengaktifkan user
+//        $user = \common\models\User::find()->where([
+//                    'account_activation_token' => $token,
+//                    'status' => 5,
+//                ])->one();
+//        if (!empty($user)) {
+//            $user->status = 10;
+//            $user->account_activation_token=null;
+//            $user->save();
+//            Yii::$app->session->setFlash('success', 'Account is activated.');
+//        } else {
+//            Yii::$app->getSession()->setFlash('warning', 'Failed to activate account. Account Activation token might be invalid.');
+//        }
+//        return $this->goHome();
+//    }
+
     public function actionAccountActivation($token) {
         try {
             $model = new AccountActivation($token);
@@ -251,6 +263,22 @@ class SiteController extends Controller {
         ]);
     }
 
+//    public function actionRequestAccountActivation() {
+//        $model = new AccountActivationRequestForm();
+//        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+//            if ($model->sendEmail()) {
+//                Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
+//                return $this->goHome();
+//            } else {
+//                Yii::$app->session->setFlash('error', 'Sorry, we are unable to proceed your account activation request for email provided.');
+//            }
+//        }
+//
+//        return $this->render('requestAccountActivationToken', [
+//                    'model' => $model,
+//        ]);
+//    }
+
     /**
      * Displays about page.
      *
@@ -258,46 +286,11 @@ class SiteController extends Controller {
      */
     public function actionAccountDetail() {
         $modelUsername = new EditUsernameForm();
-        $modelEmail = new EditEmailForm();
-        $modelPassword = new EditPasswordForm();
-        $modelStatus = new EditStatusForm();
-        $modelRole = new EditRoleForm();
-
-        if ($modelUsername->load(Yii::$app->request->post()) && $modelUsername->validate() && $modelUsername->saveUsername()) {
-            Yii::$app->session->setFlash('success', 'Username changed.');
-
-            return $this->goHome();
+        if ($modelUsername->load(Yii::$app->request->post())) {
+            if ($user = $modelUsername->saveUsername()) {
+                Yii::$app->session->setFlash('success', 'Username changed.');
+            }
         }
-        if ($modelEmail->load(Yii::$app->request->post()) && $modelEmail->validate() && $modelEmail->saveEmail()) {
-            Yii::$app->session->setFlash('success', 'E-mail changed.');
-
-            return $this->goHome();
-        }
-        if ($modelPassword->load(Yii::$app->request->post()) && $modelPassword->validate() && $modelPassword->savePassword()) {
-            Yii::$app->session->setFlash('success', 'Password changed.');
-
-            return $this->goHome();
-        }
-        if ($modelStatus->load(Yii::$app->request->post()) && $modelStatus->validate() && $modelStatus->saveStatus()) {
-            Yii::$app->session->setFlash('success', 'Status changed.');
-
-            return $this->goHome();
-        }
-
-        if ($modelRole->load(Yii::$app->request->post()) && $modelRole->validate() && $modelRole->saveRole()) {
-            Yii::$app->session->setFlash('success', 'Role changed.');
-
-            return $this->goHome();
-        }
-
-        return $this->render('accountDetail', [
-                    'modelUsername' => $modelUsername,
-                    'modelEmail' => $modelEmail,
-                    'modelPassword' => $modelPassword,
-                    'modelStatus' => $modelStatus,
-                    'modelRole' => $modelRole,
-        ]);
     }
-    
 
 }
