@@ -13,8 +13,19 @@ class EditUsernameForm extends Model {
 
     public $id;
     public $username;
+    private $_user;
     
-
+public function __construct($id, $config = [])
+    {
+        if (empty($id)) {
+            throw new InvalidParamException('User id cannot be blank.');
+        }
+        $this->_user = User::findIdentity($id);
+        if (!$this->_user) {
+            throw new InvalidParamException('There is no such user id.');
+        }
+        parent::__construct($config);
+    }
     /**
      * @inheritdoc
      */
@@ -31,7 +42,7 @@ class EditUsernameForm extends Model {
         if (!$this->validate()) {
             return null;
         }
-        $user = User::findIdentity($this->id);
+       $user = $this->_user;
         $user->username = $this->username;
         return $user->save() ? $user : null;
     }
