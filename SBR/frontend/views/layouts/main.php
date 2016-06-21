@@ -43,7 +43,10 @@ AppAsset::register($this);
                 ['label' => 'ABOUT', 'url' => ['/site/about']],
                 ['label' => 'CONTACT', 'url' => ['/site/contact']],
                 ['label' => 'GENERATE TABLE', 'url' => ['/site/generate-table']],
-                ['label' => 'PROFILE', 'url' => ['/site/account-detail']],
+                ['label' => 'MANAGE USERS', 'url' => ['/manage-user']],
+                ['label' => 'MANAGE DICTIONARY', 'url' => ['/manage-dictionary']],
+                ['label' => 'MANAGE TABLE HISTORY', 'url' => ['/manage-table-history']],
+                ['label' => 'PROFILE', 'url' => ['/site/profile']],
             ];
             if (Yii::$app->user->isGuest) {
                 $menuItems[] = ['label' => 'SIGNUP', 'url' => ['/site/signup']];

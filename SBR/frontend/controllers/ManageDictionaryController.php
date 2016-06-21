@@ -8,6 +8,7 @@ use frontend\models\SearchDictionary;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /**
  * ManageDictionaryController implements the CRUD actions for Dictionary model.
@@ -17,13 +18,23 @@ class ManageDictionaryController extends Controller
     /**
      * @inheritdoc
      */
-    public function behaviors()
-    {
+    public function behaviors() {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['view', 'update', 'index','delete','create'],
+                'rules' => [ 
+                                      [
+                        'actions' => ['view', 'update', 'index','delete','create'],
+                        'allow' => true,
+                        'roles' => ['manageGivenTable'],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['POST'],
+                    'delete' => ['post'],
                 ],
             ],
         ];

@@ -10,8 +10,9 @@ use Yii;
  * @property integer $id
  * @property string $nama_tabel
  * @property integer $jumlah_hits
+ * @property integer $flag
  */
-class TableHistory extends \yii\db\ActiveRecord
+class HistoryofTable extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
@@ -29,7 +30,7 @@ class TableHistory extends \yii\db\ActiveRecord
         return [
             [['nama_tabel', 'jumlah_hits'], 'required'],
             [['nama_tabel'], 'string'],
-            [['jumlah_hits'], 'integer'],
+            [['jumlah_hits', 'flag'], 'integer'],
             [['nama_tabel'], 'unique'],
         ];
     }
@@ -43,6 +44,7 @@ class TableHistory extends \yii\db\ActiveRecord
             'id' => 'ID',
             'nama_tabel' => 'Nama Tabel',
             'jumlah_hits' => 'Jumlah Hits',
+            'flag' => 'Flag',
         ];
     }
 }

@@ -15,6 +15,7 @@ class m160619_205134_history extends Migration {
             'id' => $this->primaryKey(),
             'nama_tabel' => $this->string()->notNull()->unique(),
             'jumlah_hits' => $this->integer()->notNull(),
+            'flag'=>$this->boolean()->notNull()->defaultValue(0),//false is nggak masuk ke suggestion
                 ], $tableOptions);
     }
 

@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]);  ?>
-
+    <?= Html::a('Add User', ['/site/signup'], ['class' => 'btn btn-primary']) ?>
     <?php Pjax::begin(); ?>    <?=
     GridView::widget([
         'dataProvider' => $dataProvider,
@@ -29,4 +29,4 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]);
     ?>
-<?php Pjax::end(); ?></div>
+    <?php Pjax::end(); ?></div>

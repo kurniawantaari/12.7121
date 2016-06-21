@@ -32,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'nama_tabel',
             'jumlah_hits',
-        ],
+                    ],
     ])
     ?>
 

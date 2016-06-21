@@ -28,7 +28,13 @@ class User extends ActiveRecord implements IdentityInterface {
     const STATUS_DELETED = 0;
     const STATUS_NOTACTIVE = 5;
     const STATUS_ACTIVE = 10;
-    
+
+    public $oldPassword;
+    public $newPassword;
+    public $confirmNewPassword;
+    public $roles = Array();
+    public $activeRoles = Array();
+
     /**
      * @inheritdoc
      */
@@ -51,8 +57,17 @@ class User extends ActiveRecord implements IdentityInterface {
     public function rules() {
         return [
             ['status', 'default', 'value' => self::STATUS_NOTACTIVE],
-            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_NOTACTIVE,self::STATUS_DELETED]],
-                    ];
+            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_NOTACTIVE, self::STATUS_DELETED]],
+            ['username', 'filter', 'filter' => 'trim'],
+            ['username', 'required'],
+            ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
+            ['username', 'string', 'min' => 2, 'max' => 255],
+            ['email', 'filter', 'filter' => 'trim'],
+            ['email', 'required'],
+            ['email', 'email'],
+            ['email', 'string', 'max' => 255],
+            ['email', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This email address has already been taken.'],
+        ];
     }
 
     /**
@@ -95,7 +110,7 @@ class User extends ActiveRecord implements IdentityInterface {
                     'status' => self::STATUS_ACTIVE,
         ]);
     }
-    
+
     /**
      * Finds user by account activation token
      *
@@ -128,7 +143,8 @@ class User extends ActiveRecord implements IdentityInterface {
         $expire = Yii::$app->params['user.passwordResetTokenExpire'];
         return $timestamp + $expire >= time();
     }
-     /**
+
+    /**
      * Finds out if account activation token is valid
      *
      * @param string $token account activation token
@@ -139,10 +155,8 @@ class User extends ActiveRecord implements IdentityInterface {
             return false;
         }
 //valid if token exist
-        if(!static::findOne(['account_activation_token' => $token]))
-            return false;
-         else return true;
-            }
+        return static::findOne(['account_activation_token' => $token]);
+    }
 
     /**
      * @inheritdoc
@@ -195,11 +209,11 @@ class User extends ActiveRecord implements IdentityInterface {
      * Generates new password reset token
      */
     public function generatePasswordResetToken() {
-         $randomString= Yii::$app->security->generateRandomString() . '_' . time();
-        if(static::findOne(['password_reset_token' => $randomString])==null)//cari token yang sama dengan string yang dibuat. jika tidak ketemu(=null)
-		$this->password_reset_token=$randomString; 
-	else
-		$this->generatePasswordResetToken();
+        $randomString = Yii::$app->security->generateRandomString() . '_' . time();
+        if (static::findOne(['password_reset_token' => $randomString]) == null)//cari token yang sama dengan string yang dibuat. jika tidak ketemu(=null)
+            $this->password_reset_token = $randomString;
+        else
+            $this->generatePasswordResetToken();
     }
 
     /**
@@ -208,23 +222,54 @@ class User extends ActiveRecord implements IdentityInterface {
     public function removePasswordResetToken() {
         $this->password_reset_token = null;
     }
-     /**
+
+    /**
      * Generates new account activation token
      */
     public function generateAccountActivationToken() {
-        $randomString= Yii::$app->security->generateRandomString() . '_' . time();
-        if(static::findOne(['account_activation_token' => $randomString])==null)
-		$this->account_activation_token=$randomString;
-	else
-		$this->generateAccountActivationToken();
+        $randomString = Yii::$app->security->generateRandomString() . '_' . time();
+        if (static::findOne(['account_activation_token' => $randomString]) == null) {
+            $this->account_activation_token = $randomString;
+        } else {
+            $this->generateAccountActivationToken();
+        }
     }
-    
+
     /**
      * Removes account activation token
      */
     public function removeAccountActivationToken() {
-              $this->account_activation_token = null;
-       
+        $this->account_activation_token = null;
     }
 
+    public function saveNewPassword() {
+        $equal = Yii::$app->security->compareString($this->newPassword, $this->confirmNewPassword);
+        if ($this->validatePassword($this->oldPassword) && $equal) {
+            $this->setPassword($this->newPassword);
+            return true;
+        } else {
+            return false;
+        }
     }
+
+    public function changeRole() {
+        $auth = Yii::$app->authManager;
+        $this->activeRoles = $auth->getRolesByUser($this->id);
+        foreach ($this->activeRoles as $role) {
+            $auth->revoke($role, $this->id);
+            $auth->assign($role, $this->id);
+        }
+    }
+
+    public function getStatusLabel() {
+        if ($this->status == 10) {
+            return 'Active';
+        } else
+        if ($this->status == 5) {
+            return 'Nonactive';
+        } else {
+            return 'Deleted';
+        }
+    }
+
+}

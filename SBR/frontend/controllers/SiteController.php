@@ -9,16 +9,12 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use common\models\LoginForm;
+use common\models\User;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\AccountActivation;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
-use frontend\models\EditUsernameForm;
-use frontend\models\EditEmailForm;
-use frontend\models\EditPasswordForm;
-use frontend\models\EditStatusForm;
-use frontend\models\EditRoleForm;
 
 /**
  * Site controller
@@ -32,21 +28,17 @@ class SiteController extends Controller {
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup', 'about'],
-                'rules' => [ [
-                        'actions' => ['signup'],
-                        'allow' => true,
-                        'roles' => ['?'],
-                    ],
+                'only' => ['logout', 'signup', 'profile'],
+                'rules' => [
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['logout', 'profile'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
                     [
-                        'actions' => ['about'],
+                        'actions' => ['signup'],
                         'allow' => true,
-                        'roles' => ['manageGivenTable'],
+                        'roles' => ['manageUsers'],
                     ],
                 ],
             ],
@@ -251,53 +243,17 @@ class SiteController extends Controller {
         ]);
     }
 
-    /**
-     * Displays about page.
-     *
-     * @return mixed
-     */
-    public function actionAccountDetail() {
-        $modelUsername = new EditUsernameForm();
-        $modelEmail = new EditEmailForm();
-        $modelPassword = new EditPasswordForm();
-        $modelStatus = new EditStatusForm();
-        $modelRole = new EditRoleForm();
-
-        if ($modelUsername->load(Yii::$app->request->post()) && $modelUsername->validate() && $modelUsername->saveUsername()) {
-            Yii::$app->session->setFlash('success', 'Username changed.');
-
-            return $this->goHome();
+    public function actionProfile() {
+        if (Yii::$app->user->isGuest) {
+            return $this->actionLogin();
+        } else {
+            $id = \Yii::$app->user->identity->id;
+            $model = User::findOne($id);
+            
+            return Yii::$app->runAction('manage-user/update', [
+                'model' => $model,
+                'id' => $id,
+            ]);
         }
-        if ($modelEmail->load(Yii::$app->request->post()) && $modelEmail->validate() && $modelEmail->saveEmail()) {
-            Yii::$app->session->setFlash('success', 'E-mail changed.');
-
-            return $this->goHome();
-        }
-        if ($modelPassword->load(Yii::$app->request->post()) && $modelPassword->validate() && $modelPassword->savePassword()) {
-            Yii::$app->session->setFlash('success', 'Password changed.');
-
-            return $this->goHome();
-        }
-        if ($modelStatus->load(Yii::$app->request->post()) && $modelStatus->validate() && $modelStatus->saveStatus()) {
-            Yii::$app->session->setFlash('success', 'Status changed.');
-
-            return $this->goHome();
-        }
-
-        if ($modelRole->load(Yii::$app->request->post()) && $modelRole->validate() && $modelRole->saveRole()) {
-            Yii::$app->session->setFlash('success', 'Role changed.');
-
-            return $this->goHome();
-        }
-
-        return $this->render('accountDetail', [
-                    'modelUsername' => $modelUsername,
-                    'modelEmail' => $modelEmail,
-                    'modelPassword' => $modelPassword,
-                    'modelStatus' => $modelStatus,
-                    'modelRole' => $modelRole,
-        ]);
     }
-    
-
 }
