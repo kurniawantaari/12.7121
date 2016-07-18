@@ -19,11 +19,11 @@ AppAsset::register($this);
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="icon" type="image/x-icon" href="<?php echo Yii::$app->request->baseUrl; ?>/favicon.png"/>
         <link href='https://fonts.googleapis.com/css?family=Lato:400,700italic,700,400italic' rel='stylesheet' type='text/css'>
-        
-          <?= Html::csrfMetaTags() ?>
+
+        <?= Html::csrfMetaTags() ?>
         <title>SBR-<?= Html::encode($this->title) ?></title>
         <?php $this->head() ?>
-        
+
     </head>
     <body>
         <?php $this->beginBody() ?>
@@ -32,47 +32,72 @@ AppAsset::register($this);
             <?php
             NavBar::begin([
                 'brandLabel' => '<img src="favicon.png" class="pull-left"/><span>SBR</span>',
-                
                 'brandUrl' => Yii::$app->homeUrl,
                 'options' => [
                     'class' => 'navbar-fixed-top',
                 ],
             ]);
             $menuItems = [
-                ['label' => 'HOME', 'url' => ['/site/index']],
-                ['label' => 'ABOUT', 'url' => ['/site/about']],
-                ['label' => 'CONTACT', 'url' => ['/site/contact']],
-                ['label' => 'GENERATE TABLE', 'url' => ['/site/generate-table']],
-                ['label' => 'MANAGE USERS', 'url' => ['/manage-user']],
-                ['label' => 'MANAGE DICTIONARY', 'url' => ['/manage-dictionary']],
-                ['label' => 'MANAGE TABLE HISTORY', 'url' => ['/manage-table-history']],
-                ['label' => 'PROFILE', 'url' => ['/site/profile']],
+                ['label' => 'Home', 'url' => ['/site/index']],
+                ['label' => 'About', 'url' => ['/site/about']],
+                ['label' => 'Contact', 'url' => ['/site/contact']],
+                ['label' => 'Generate Table',
+                    'items' => [
+                        ['label' => 'Given Table', 'url' => ['/site/generate-given-table']],
+                        ['label' => 'Custom Table', 'url' => ['/site/generate-custom-table']],
+                    ],
+                ],
+                ['label' => 'Manage', 'visible' => Yii::$app->user->can('manageGivenTable') || Yii::$app->user->can('manageUsers'),
+                    'items' => [
+                        [
+                            'label' => 'Dictionary',
+                            'url' => ['/manage-dictionary'],
+                            'visible' => Yii::$app->user->can('manageGivenTable')
+                        ],
+                        '<li class="divider"></li>',
+                        ['label' => 'History of Table',
+                            'url' => ['/manage-table-history'],
+                            'visible' => Yii::$app->user->can('manageUsers')
+                        ],
+                        [
+                            'label' => 'Users',
+                            'url' => ['/manage-user'],
+                            'visible' => Yii::$app->user->can('manageUsers')
+                        ]
+                    ],
+                ],
             ];
             if (Yii::$app->user->isGuest) {
-                $menuItems[] = ['label' => 'SIGNUP', 'url' => ['/site/signup']];
-                $menuItems[] = ['label' => 'LOGIN', 'url' => ['/site/login']];
+
+                $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
             } else {
-                $menuItems[] = '<li>'
+                $submenuUser[] = ['label' => 'Profile', 'url' => ['/site/profile']];
+                $submenuUser[] = '<li class="divider"></li>';
+                $submenuUser[] = '<li>'
                         . Html::beginForm(['/site/logout'], 'post')
                         . Html::submitButton(
-                                'LOGOUT (' . Yii::$app->user->identity->username . ')', ['class' => 'btn btn-link']
+                                'Logout', ['class' => 'btn btn-link btn-block plain']
                         )
                         . Html::endForm()
                         . '</li>';
+
+                $menuItems[] = ['label' => Yii::$app->user->identity->username,
+                    'items' => $submenuUser];
             }
             echo Nav::widget([
-                'options' => ['class' => 'navbar-nav navbar-right'],
+
+                'options' => ['class' => 'navbar-nav'],
                 'items' => $menuItems,
             ]);
             NavBar::end();
             ?>
 
             <div class="container">
-<?=
-Breadcrumbs::widget([
-    'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-])
-?>
+                <?=
+                Breadcrumbs::widget([
+                    'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+                ])
+                ?>
                 <?= Alert::widget() ?>
                 <?= $content ?>
             </div>

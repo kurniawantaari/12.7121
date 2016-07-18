@@ -75,7 +75,10 @@ class SiteController extends Controller {
         return $this->render('index');
     }
 
-    public function actionGenerateTable() {
+    public function actionGenerateGivenTable() {
+        return $this->render('givenTable');
+    }
+    public function actionGenerateCustomTable() {
         return $this->render('generateTable');
     }
 

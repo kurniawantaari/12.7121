@@ -24,6 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                      'nama_tabel',
             'jumlah_hits',
+            'flag',
             ['class' => 'yii\grid\ActionColumn','template'=>'{view} {delete}' ],
         ],
     ]); ?>
@@ -42,6 +43,19 @@ $this->params['breadcrumbs'][] = $this->title;
           $.ajax({
             type: \'POST\',
             url : \'index.php?r=manage-table-history/delete-selected\',
+            data : {row_id: RowId},
+            success : function() {
+              $(this).closest(\'tr\').remove();
+            }
+        });
+
+    });
+    $(\'#addToSuggestion\').click(function(){
+
+        var RowId = $(\'#w1\').yiiGridView(\'getSelectedRows\');
+          $.ajax({
+            type: \'POST\',
+            url : \'index.php?r=manage-table-history/add-to-suggestion\',
             data : {row_id: RowId},
             success : function() {
               $(this).closest(\'tr\').remove();

@@ -3,13 +3,12 @@
 
 use yii\helpers\Html;
 
-$this->title = 'Dinamic Table';
+$this->title = 'Generate Custom Table';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="site-dinamicTable">
+<div class="site-generate-custom-table">
     <h1><?= Html::encode($this->title) ?></h1>
-
-    <!-- select elemnt from here-->
+<!-- select elemnt from here-->
     <!--variable view. on small on top of page, on medium iconize?. tampilannya seperti icon di visual paradigm.
              jadi, kalau diklik, muncul di buttonnya yang terpilih. setelah itu bar di drag and drop.-->
     <div class="container-fluid">
@@ -81,4 +80,27 @@ $css = <<< CSS
 }
 CSS;
 $this->registerCss($css);
-?>
+$js = <<<JS
+            $(function () {
+    $("#variables, #tabcol,#tabrow").sortable({
+        items: "> li",
+        connectWith: ".connectedVariables",
+        // axis: "x" //only horizontally or vertically
+        cancel: "a.ui-icon", // clicking an icon won't initiate dragging
+        containment: $(".site-generateTable"),
+        cursor: "move",
+        //handle:".handle"
+        //helper: "clone",
+        // forceHelperSize: false,
+        //opacity: 0.7, //opacity helper
+        dropOnEmpty: true,
+        placeholder: "drop-placeholder",
+        forcePlaceholderSize: true,
+        revert: true,
+        //scroll:false
+        tolerance: "pointer",
+    }).disableSelection();
+});
+JS;
+$this->registerJs($js);        
+   ?>

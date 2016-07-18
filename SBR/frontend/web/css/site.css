@@ -102,11 +102,33 @@ a.desc:after {
 }
 
 @media(max-width:768px) {
-	.nav li > form {
-	    padding: 3px;
-	}
+    .nav li > form {
+        padding: 3px;
+    }
 }
 
 .nav > li > form > button:hover {
     text-decoration: none;
+}
+.navbar .nav,
+.navbar .nav > li {
+    float:none;
+    display:inline-block;
+    *display:inline; /* ie7 fix */
+    *zoom:1; /* hasLayout ie7 trigger */
+    vertical-align: top;
+}
+
+.navbar>.container {
+    text-align:center;
+}
+.btn-link.plain:hover{
+    /*sesuaikan dengan hover yang lain*/
+    background:#eee;
+}
+.btn-link.plain{
+    text-align:left;
+    text-decoration: none;
+    background:none;
+    color:inherit;
 }

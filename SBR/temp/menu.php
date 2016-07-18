@@ -2,7 +2,6 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-
 /* @var $this yii\web\View */
 /* @var $model common\models\User */
 /* @var $form yii\widgets\ActiveForm */
@@ -22,7 +21,6 @@ use yii\widgets\ActiveForm;
                     <?php $formUsername = ActiveForm::begin(); ?>   
                     <?= $formUsername->field($model, 'username')->textInput(['style' => 'width:300px;']) ?>
                     <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>                    
-                    <?= Html::resetButton('Cancel', ['class' => 'btn btn-default']) ?>
                     <?php ActiveForm::end(); ?>
                 </div>
             </div>
@@ -40,7 +38,6 @@ use yii\widgets\ActiveForm;
                     <?php $formEmail = ActiveForm::begin(); ?>  
                     <?= $formEmail->field($model, 'email') ?>
                     <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>                    
-                    <?= Html::resetButton('Cancel', ['class' => 'btn btn-default']) ?>
                     <?php ActiveForm::end(); ?>
                 </div>
             </div>
@@ -55,33 +52,54 @@ use yii\widgets\ActiveForm;
             </div>
             <div id="collapsePassword" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingPassword">
                 <div class="panel-body">
-                    <?php $idSelectedUser = $model->getOldAttribute("id");
-                    echo $idSelectedUser;?>
-                     <?=Html::a('Change your password?', ['manage-user/change-password','id' =>$idSelectedUser]) ?>
-
+                     <?= Html::a('Change your password?', ['manage-user/change-password']) ?>
+                    
                 </div>
             </div>
         </div>
-                 <div class="panel panel-default">
-                <div class="panel-heading" role="tab" id="headingStatus">
-                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#user-profile" href="#collapseStatus" aria-expanded="false" aria-controls="collapseStatus">
-                        <h4 class="panel-title">
-                            <b>Status</b><i class="col-sm-offset-1"><?php echo $model->getStatusLabel(); ?></i>
-                        </h4>
-                    </a>
-                </div>
-                <div id="collapseStatus" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingStatus">
-                    <div class="panel-body">
-                        <?php $formStatus = ActiveForm::begin(); ?>  
-                        <?= $formStatus->field($model, 'status')->dropDownList([0 => 'Deleted', 5 => 'Nonactive', 10 => 'Active'], ['disabled' => !\Yii::$app->user->can('manageUsers')]) ?>
-                        <?php if((\Yii::$app->user->can('manageUsers'))) { 
-                             Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'disabled' => !\Yii::$app->user->can('manageUsers')]);
-     Html::resetButton('Cancel', ['class' => 'btn btn-default', 'disabled' => !\Yii::$app->user->can('manageUsers')]);
-                        }?>
-                        
-    <?php ActiveForm::end(); ?>
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="headingStatus">
+                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#user-profile" href="#collapseStatus" aria-expanded="false" aria-controls="collapseStatus">
+                    <h4 class="panel-title">
+                        <b>Status</b><i class="col-sm-offset-1"><?php echo $model->getStatusLabel(); ?></i>
+                    </h4>
+                </a>
+            </div>
+            <div id="collapseStatus" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingStatus">
+                <div class="panel-body">
+                    <?php $formStatus = ActiveForm::begin(); ?>  
+                    <?= $formStatus->field($model, 'status')->dropDownList([0 => 'Deleted', 5 => 'Nonactive', 10 => 'Active']) ?>
+                    <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>   
+                    <?php ActiveForm::end(); ?>
                 </div>
             </div>
-        </div> 
+        </div>
+        <?php
+        if (Yii::$app->user->can('manageUsers')) {
+            echo '<div class="panel panel-default">';
+            echo '<div class="panel-heading" role="tab" id="headingRole">';
+            echo '<a class="collapsed" role="button" data-toggle="collapse" data-parent="#user-profile" href="#collapseRole" aria-expanded="false" aria-controls="collapseRole">';
+            echo '<h4 class="panel-title">';
+            echo '<b>Role:</b>';
+            echo '</h4>';
+            echo '</a>';
+            echo '</div>';
+            echo '<div id="collapseRole" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingRole">';
+        echo '<div class="panel-body">';}?>
+         <?php if (Yii::$app->user->can('manageUsers')) {}
+            $formRole = ActiveForm::begin();
+            $formRole->field($model, 'roles')->checkboxList(['admin' => 'admin', 'tim sbr' => 'sbr']);
+            echo '<div class="form-group">';
+            Html::submitButton('Update', ['class' => 'btn btn-primary']);
+            echo '</div>';?>
+           <?php ActiveForm::end(); ?>
+           <?php 
+           if (Yii::$app->user->can('manageUsers')) {
+               echo '</div>';
+            echo '</div>';
+            echo '</div>';
+           }
+        
+        ?>
     </div>
 </div>

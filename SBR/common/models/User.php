@@ -27,14 +27,7 @@ class User extends ActiveRecord implements IdentityInterface {
 
     const STATUS_DELETED = 0;
     const STATUS_NOTACTIVE = 5;
-    const STATUS_ACTIVE = 10;
-
-    public $oldPassword;
-    public $newPassword;
-    public $confirmNewPassword;
-    public $roles = Array();
-    public $activeRoles = Array();
-
+    const STATUS_ACTIVE = 10;    
     /**
      * @inheritdoc
      */
@@ -241,27 +234,7 @@ class User extends ActiveRecord implements IdentityInterface {
     public function removeAccountActivationToken() {
         $this->account_activation_token = null;
     }
-
-    public function saveNewPassword() {
-        $equal = Yii::$app->security->compareString($this->newPassword, $this->confirmNewPassword);
-        if ($this->validatePassword($this->oldPassword) && $equal) {
-            $this->setPassword($this->newPassword);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public function changeRole() {
-        $auth = Yii::$app->authManager;
-        $this->activeRoles = $auth->getRolesByUser($this->id);
-        foreach ($this->activeRoles as $role) {
-            $auth->revoke($role, $this->id);
-            $auth->assign($role, $this->id);
-        }
-    }
-
-    public function getStatusLabel() {
+      public function getStatusLabel() {
         if ($this->status == 10) {
             return 'Active';
         } else
@@ -271,5 +244,5 @@ class User extends ActiveRecord implements IdentityInterface {
             return 'Deleted';
         }
     }
-
+     
 }

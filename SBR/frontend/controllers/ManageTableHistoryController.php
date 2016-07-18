@@ -13,19 +13,19 @@ use yii\filters\AccessControl;
 /**
  * ManageTableHistoryController implements the CRUD actions for HistoryofTable model.
  */
-class ManageTableHistoryController extends Controller
-{
-     /**
+class ManageTableHistoryController extends Controller {
+
+    /**
      * @inheritdoc
      */
     public function behaviors() {
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['view', 'update', 'delete','create','index'],
-                'rules' => [ 
+                'only' => ['view', 'update', 'delete', 'create', 'index'],
+                'rules' => [
                     [
-                        'actions' => ['view', 'update', 'delete','create','index'],
+                        'actions' => ['view', 'update', 'delete', 'create', 'index'],
                         'allow' => true,
                         'roles' => ['manageUsers'],
                     ],
@@ -44,14 +44,13 @@ class ManageTableHistoryController extends Controller
      * Lists all HistoryofTable models.
      * @return mixed
      */
-    public function actionIndex()
-    {
+    public function actionIndex() {
         $searchModel = new HistoryofTableSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -60,10 +59,9 @@ class ManageTableHistoryController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionView($id)
-    {
+    public function actionView($id) {
         return $this->render('view', [
-            'model' => $this->findModel($id),
+                    'model' => $this->findModel($id),
         ]);
     }
 
@@ -72,15 +70,14 @@ class ManageTableHistoryController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
-    {
+    public function actionCreate() {
         $model = new HistoryofTable();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
-                'model' => $model,
+                        'model' => $model,
             ]);
         }
     }
@@ -91,15 +88,14 @@ class ManageTableHistoryController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($id)
-    {
+    public function actionUpdate($id) {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
-                'model' => $model,
+                        'model' => $model,
             ]);
         }
     }
@@ -110,8 +106,7 @@ class ManageTableHistoryController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionDelete($id)
-    {
+    public function actionDelete($id) {
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
@@ -124,38 +119,35 @@ class ManageTableHistoryController extends Controller
      * @return HistoryofTable the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
-    {
+    protected function findModel($id) {
+        
         if (($model = HistoryofTable::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-    public function actionDeleteSelected()
-    {
+
+    public function actionDeleteSelected() {
         $pk = Yii::$app->request->post('row_id');
 
-        foreach ($pk as $key => $value) 
-        {
+        foreach ($pk as $key => $value) {
             $this->findModel($value)->delete();
-
-                }
-
+        }
+        Yii::$app->session->setFlash('success', 'delete selected record succeed.');
         return $this->redirect(['index']);
-
     }
-    public function actionAddToSuggestion()
-    {
+
+    public function actionAddToSuggestion() {
         $pk = Yii::$app->request->post('row_id');
 
-        foreach ($pk as $key => $value) 
-        {
-           //save to suggestion table? $this->findModel($value)->delete();
-
-                }
-
+        foreach ($pk as $key => $value) {
+            $model = $this->findModel($value);
+            $model->flag = 1;
+            $model->save();
+        }
+        Yii::$app->session->setFlash('success', 'Add to suggestion succeed.');
         return $this->redirect(['index']);
-
     }
+
 }
