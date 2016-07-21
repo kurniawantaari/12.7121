@@ -7,22 +7,20 @@ use yii\web\AssetBundle;
 /**
  * Main frontend application asset bundle.
  */
-class AppAsset extends AssetBundle
-{
-   
+class AppAsset extends AssetBundle {
 
-public $basePath = '@webroot';
+    public $basePath = '@webroot';
     public $baseUrl = '@web';
     public $css = [
         'css/site.css',
-            ];
-    public $js = [  
-     'js/tableDesigner.js',
-                   ];
+    ];
+    public $js = [
+        'js/tableDesigner.js',
+    ];
     public $depends = [
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',
-      'yii\jui\JuiAsset',
-        
+        'yii\jui\JuiAsset',
     ];
+
 }

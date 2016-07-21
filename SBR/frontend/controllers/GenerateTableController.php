@@ -9,8 +9,9 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use yii\data\SqlDataProvider;
-class GenerateTableController extends Controller {
+use \frontend\models\GenerateCustomTableForm;
 
+class GenerateTableController extends Controller {
 
     /**
      * @inheritdoc
@@ -27,27 +28,16 @@ class GenerateTableController extends Controller {
         ];
     }
 
-    
-    public function actionIndexTemp() {
-        
-        //$connection = \yii\db\Connection();
-        //$connection->open();
-        //  $dummy = $connection->createCommand('SELECT * FROM dummy')->queryAll();
+    public function actionIndex() {
+        $model=new GenerateCustomTableForm();
         $dataProvider = new SqlDataProvider([
-    'sql' => 'SELECT * FROM dummy',
-    ]);
-      return $this->render('tesTable');
-        
-        
-    }
-    public function actionIndex()
-    {
-        $dataProvider = new SqlDataProvider([
-    'sql' => 'SELECT * FROM dummy',
-    ]);
-
+            'sql' => 'SELECT * FROM dummy',
+        ]);
+   
         return $this->render('tesTable', [
-                        'dataProvider' => $dataProvider,
+                    'dataProvider' => $dataProvider,
+                    'model' => $model
         ]);
     }
+
 }
