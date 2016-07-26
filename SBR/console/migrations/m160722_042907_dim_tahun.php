@@ -13,7 +13,8 @@ class m160722_042907_dim_tahun extends Migration {
 
         $this->createTable('{{%tahun}}', [
             'id' => $this->primaryKey(),
-            'tahun' => $this->char(4)->notNull()->unique(),
+            'tahun' => $this->char(4)->notNull(),
+            'jenis' => $this->char(2)->notNull()//su=survival unit, se=survivalentry, ju=jumlahunit
                 ], $tableOptions);
     }
 
