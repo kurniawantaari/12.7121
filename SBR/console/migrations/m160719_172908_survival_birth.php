@@ -2,8 +2,8 @@
 
 use yii\db\Migration;
 
-class m160719_172908_survival_birth extends Migration
-{
+class m160719_172908_survival_birth extends Migration {
+
     public function up() {
         $tableOptions = null;
         if ($this->db->driverName === 'mysql') {
@@ -22,13 +22,18 @@ class m160719_172908_survival_birth extends Migration
             'statusperusahaan' => $this->char(1), //kondisi: aktif,tutup, tutup sementara, dll
             'unitstatistik' => $this->char(2), //es,eg,en,au
             'institusi' => $this->char(3), //sektor institusi
-            'klasifikasiindustri' => $this->char(1), //industri besar/sedang/kecil/rt
+            
+            'kepemilikan'=>$this->char(1),
+            'jaringanusaha'=>$this->char(1),
             'tahun' => $this->char(4), //tahun snapshot
             //measure
             'jumlahmasuk' => $this->bigInteger(), //referensi ke tahun snapshot-3 tabel jumlah_unit
             'survived1' => $this->bigInteger(), //jumlah yang masuk tahun snapshot-3 dan aktf snaphot -2
             'survived2' => $this->bigInteger(), //jumlah yang masuk tahun snapshot-3 dan aktf snaphot -2 dan aktf snaphot -1
-            'survived3' => $this->bigInteger()//jumlah yang masuk tahun snapshot-3 dan aktf snaphot -2 dan aktf snaphot -1 dan aktf snaphot -1 dan aktf snaphot -0
+            'survived3' => $this->bigInteger(), //jumlah yang masuk tahun snapshot-3 dan aktf snaphot -2 dan aktf snaphot -1 dan aktf snaphot -1 dan aktf snaphot -0
+            'survivalrate1' => $this->double(),
+            'survivalrate2' => $this->double(),
+            'survivalrate3' => $this->double()
                 ], $tableOptions);
     }
 
@@ -36,14 +41,4 @@ class m160719_172908_survival_birth extends Migration
         $this->dropTable('{{%survival_birth}}');
     }
 
-    /*
-      // Use safeUp/safeDown to run migration code within a transaction
-      public function safeUp()
-      {
-      }
-
-      public function safeDown()
-      {
-      }
-     */
 }
