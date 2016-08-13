@@ -22,7 +22,10 @@
         "kartik-v/yii2-export": "*",
         "kartik-v/yii2-mpdf": "*",
         "kartik-v/yii2-grid": "@dev",
-        "kartik-v/yii2-tabs-x": "*"
+        "kartik-v/yii2-tabs-x": "*",
+        "kartik-v/yii2-widget-select2": "*",
+        "kartik-v/yii2-widget-depdrop": "@dev",
+        "drsdre/yii2-wizardwidget": "*"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",

@@ -43,8 +43,8 @@ AppAsset::register($this);
                 ['label' => 'Contact', 'url' => ['/site/contact']],
                 ['label' => 'Generate Table',
                     'items' => [
-                        ['label' => 'Given Table', 'url' => ['/site/generate-given-table']],
-                        ['label' => 'Custom Table', 'url' => ['/site/generate-custom-table']],
+                        ['label' => 'Given Table', 'url' => ['/generate-table/generate-given-table']],
+                        ['label' => 'Custom Table', 'url' => ['/generate-table/generate-custom-table']],
                     ],
                 ],
                 ['label' => 'Manage', 'visible' => Yii::$app->user->can('manageGivenTable') || Yii::$app->user->can('manageUsers'),

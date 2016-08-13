@@ -15,7 +15,6 @@ class AppAsset extends AssetBundle {
         'css/site.css',
     ];
     public $js = [
-        'js/tableDesigner.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

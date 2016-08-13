@@ -1,16 +1,15 @@
 <?php
-/* @var $this yii\web\View */
 
 use yii\helpers\Html;
 
-$this->title = 'Generate Table';
-$this->params['breadcrumbs'][] = $this->title;
+//step 4 pilih variabel dan tempatkan. max=3. kalo bisa kasih filter.
+//jika atribut, tahun, dan lokasi telah dipilih, maka hide pilihan lain.
+//variabel:kategori industri dll
+//survival: pilihan variabel hanya boleh satu yang dipilih. tahun dan stribut pasti masuk variabel
 ?>
-<div class="site-generateTable">
-    <h1><?= Html::encode($this->title) ?></h1>
-<!-- select elemnt from here-->
-    <!--variable view. on small on top of page, on medium iconize?. tampilannya seperti icon di visual paradigm.
-             jadi, kalau diklik, muncul di buttonnya yang terpilih. setelah itu bar di drag and drop.-->
+<h4 class="wizard-title">Step 4: Select Variables</h4>
+<div class="select-variables">
+    
     <div class="container-fluid">
         <div class=" col-xs-12 col-sm-4">
             <p>select element here</p>
@@ -38,20 +37,13 @@ $this->params['breadcrumbs'][] = $this->title;
             <ul id="tabcol" class="connectedVariables col-xs-6 col-sm-7" style="min-height:100px;padding: 2px 0 2px 0;background:whitesmoke;border-left:dotted lightgrey 2px;">
 
             </ul>
-            
+
         </div>
-       
-
-    </div> <div class="row">
-                <button type="button" class="btn btn-default col-xs-offset-5" style="margin-top: 5px;">Generate Table</button>
-            </div>
-
-
+    </div>
+    <?= Html::submitButton('Generate Table',['class '=>'btn btn-primary']) ?>
 </div>
-
-
-<?php
-$css = <<< CSS
+    <?php
+    $css = <<< CSS
             /* ---- variables---- */
     .drop{
        background:#eaeae1; 
@@ -79,5 +71,26 @@ $css = <<< CSS
     
 }
 CSS;
-$this->registerCss($css);
-?>
+    $this->registerCss($css);
+
+    $this->registerJS('
+        $("#variables, #tabcol,#tabrow").sortable({
+        items: "> li",
+        connectWith: ".connectedVariables",
+        // axis: "x" //only horizontally or vertically
+        cancel: "a.ui-icon", // clicking an icon wont initiate dragging
+        containment: $(".select-variables"),
+        cursor: "move",
+        //handle:".handle"
+        //helper: "clone",
+        // forceHelperSize: false,
+        //opacity: 0.7, //opacity helper
+        dropOnEmpty: true,
+        placeholder: "drop-placeholder",
+        forcePlaceholderSize: true,
+        revert: true,
+        //scroll:false
+        tolerance: "pointer",
+    }).disableSelection();
+');
+    ?>

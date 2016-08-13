@@ -78,11 +78,7 @@ class SiteController extends Controller {
     public function actionGenerateGivenTable() {
         return $this->render('givenTable');
     }
-    public function actionGenerateCustomTable() {
-        return $this->render('generateTable');
-    }
-
-    /**
+       /**
      * Logs in a user.
      *
      * @return mixed
