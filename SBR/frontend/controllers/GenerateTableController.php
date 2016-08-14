@@ -10,6 +10,7 @@ use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use yii\data\SqlDataProvider;
 use \frontend\models\GeneratorTable;
+use frontend\models\Propinsi;
 use frontend\models\Kabupaten;
 use frontend\models\Kecamatan;
 use frontend\models\Desa;
@@ -84,22 +85,29 @@ class GenerateTableController extends Controller {
         }
     }
 
-    public function actionGetKabupaten($kdprop) {
+    public function actionGetKabupaten($kdprop,$nmpro) {
         if (Yii::$app->request->getIsPost()) {
-            $kabupaten = Kabupaten::find()
-                    ->where(['kdprop' => $kdprop,])
-                    ->andWhere(['not', ['kdkab' => '00']])
-                    ->all();
-            $countKabupaten = Kabupaten::find()
-                    ->where(['kdprop' => $kdprop,])
-                    ->andWhere(['not', ['kdkab' => '00']])
-                    ->count();
-            if ($countKabupaten > 0) {
-                foreach ($kabupaten as $kabupaten) {
-                    echo "<option value='" . $kabupaten->kdkab . "'>" . $kabupaten->nmkab . "</option>";
+          
+          $kdprop1 = explode(",", $kdprop);
+          $nmprop1 = explode(",", $nmprop);
+            foreach ($kdprop1 as $id) {
+                echo "<optgroup value='" . $id ."name='" .$nmprop1."'>";
+                $kabupaten = Kabupaten::find()
+                        ->where(['kdprop' => $id,])
+                        ->andWhere(['not', ['kdkab' => '00']])
+                        ->all();
+                $countKabupaten = Kabupaten::find()
+                        ->where(['kdprop' => $id,])
+                        ->andWhere(['not', ['kdkab' => '00']])
+                        ->count();
+                if ($countKabupaten > 0) {
+                    foreach ($kabupaten as $kabupaten) {
+                        echo "<option value='" . $kabupaten->kdkab . "'>" . $kabupaten->nmkab . "</option>";
+                    }
+                    echo "</optgroup>";
+                } else {
+                    echo"<option></option>";
                 }
-            } else {
-                echo"<option></option>";
             }
         } else {
             echo "Invalid request.";
@@ -134,24 +142,106 @@ class GenerateTableController extends Controller {
         }
     }
 
+    public function actionGetMandatoryvariables($attributes, $tahun) {
+        if (Yii::$app->request->getIsPost()) {
+            //Wajib dipilih
+            $attr = explode(",", $attributes);
+            $thn = explode(",", $tahun);
+            if (sizeof($attr) > 1) {
+                echo "<li>Attributes</li>";
+            }
+            if (sizeof($thn) > 1) {
+                echo "<li>Tahun</li>";
+            }
+        } else {
+            echo "Invalid request.";
+        }
+    }
+
+    public function actionGetVariablelist($kdprop) {
+        $variableList = array(
+            "kdkbli" => "KBLI",
+            "unitstatistik" => "Unit Statistik",
+            "statusperusahaan" => "Status Perusahaan",
+            "kdkategori" => "Kategori",
+            "institusi" => "Sektor Institusi",
+            "kepemilikan" => "Kepemilikan",
+            "jaringanusaha" => "Jaringan Usaha",
+            "lokasi" => "Lokasi",
+            "tahun" => "Tahun",
+            "atribut" => "Atribut",
+        );
+        if (Yii::$app->request->getIsPost()) {
+            foreach ($variableList as $key => $value) {
+                echo "<li value='" . $key . "'>" . $value . "</li>";
+            }
+            if ($kdprop == "null" || $kdprop == "") {
+                echo "<li>Propinsi</li>";
+            }
+        } else {
+            echo "Invalid request.";
+        }
+    }
+
+    public function actionGetLocationvariables($kdprop, $kdkab, $kdkec, $kddesa) {
+        if (Yii::$app->request->getIsPost()) {
+            echo "<li>Prop:" . $kdprop . "</li>";
+            echo "<li>Kab:" . $kdkab . "</li>";
+            echo "<li>Kec:" . $kdkec . "</li>";
+            echo "<li>Des:" . $kddesa . "</li>";
+//           if ($kdprop <> null && $kdprop <> "") {//Jika propinsi ada yang dipilih,
+//                if ($kdkab == null || $kdkab == "") {
+//                    echo "<li>Kabupaten</li>";
+//                } elseif ($kdkec == null || $kdkec == "") {
+//                    echo "<li>Kecamatan</li>";
+//                } elseif ($kddesa == null || $kddesa == "") {
+//                    echo "<li>Desa</li>";
+//                }
+//            }
+        } else {
+            echo "Invalid request.";
+        }
+    }
+
     public function actionGetAttributes($subject) {
         if (Yii::$app->request->getIsPost()) {
-
             if ($subject == 'se') {
-                $attributes= array(""=>"Jumlah Masuk",""=>"Jumlah Survived",""=>"Survival Rate");
+                $attributes = array(
+                    "jumlahmasuk" => "Jumlah Masuk",
+                    "survived1" => "Survived Tahun I",
+                    "survivalrate1" => "Survival Rate Tahun I",
+                    "survived2" => "Survived Tahun II",
+                    "survivalrate2" => "Survival Rate Tahun II",
+                    "survived3" => "Survived Tahun III",
+                    "survivalrate3" => "Survival Rate Tahun III",);
                 foreach ($attributes as $key => $value) {
-
-                    echo "<option value='" . $key. "'>" . $value . "</option>";
+                    echo "<option value='" . $key . "'>" . $value . "</option>";
+                }
+            } else if ($subject == 'su') {
+                $attributes = array(
+                    "jumlahunit" => "Jumlah Akhir Tahun",
+                    "survived1" => "Survived Tahun I",
+                    "survivalrate1" => "Survival Rate Tahun I",
+                    "survived2" => "Survived Tahun II",
+                    "survivalrate2" => "Survival Rate Tahun II",
+                    "survived3" => "Survived Tahun III",
+                    "survivalrate3" => "Survival Rate Tahun III",
+                );
+                foreach ($attributes as $key => $value) {
+                    echo "<option value='" . $key . "'>" . $value . "</option>";
                 }
             } else {
-                if($subject=='su'){
-                     attributesValue = ["Jumlah Akhir Tahun", "Jumlah Survived", "Survival Rate"];
-                }else{//subject=='ju
-                   attributesValue = ["Jumlah Masuk", "Jumlah Keluar", "Jumlah Awal Tahun", "Jumlah Aktif Beroperasi", "Jumlah Akhir Tahun", "Perubahan"];   
+                $attributes = array(
+                    "jumlahmasuk" => "Jumlah Masuk",
+                    "jumlahkeluar" => "Jumlah Keluar",
+                    "jumlahunit0" => "Jumlah Awal Tahun",
+                    "beroperasi" => "Jumlah Aktif Beroperasi",
+                    "jumlahunit1" => "Jumlah Akhir Tahun",
+                    "perubahan" => "Perubahan",);
+                foreach ($attributes as $key => $value) {
+                    echo "<option value='" . $key . "'>" . $value . "</option>";
                 }
-               
-                }
-            
+            }
         } else {
             echo "Invalid request.";
         }
@@ -166,9 +256,62 @@ class GenerateTableController extends Controller {
         ]);
     }
 
-    public function actionView() {
-        return $this->render('view', [
-        ]);
+    public function actionGetTableColumn($attributes, $tahun, $kdprop, $kdkab, $kdkec, $kddesa) {
+        $variableList = array(
+            "kdkbli" => "KBLI",
+            "unitstatistik" => "Unit Statistik",
+            "statusperusahaan" => "Status Perusahaan",
+            "kdkategori" => "Kategori",
+            "institusi" => "Sektor Institusi",
+            "kepemilikan" => "Kepemilikan",
+            "jaringanusaha" => "Jaringan Usaha",
+//            "tahun" => "tahun",
+//            "kddesa" => "Desa",
+//            "kdkec" => "Kecamatan",
+//            "kdkab" => "Kabupaten",
+//            "kdprop" => "Propinsi",
+////            Attributes:
+//            "jumlahmasuk" => "Jumlah Masuk",
+//            "jumlahkeluar" => "Jumlah Keluar",
+//            "jumlahunit0" => "Jumlah Awal Tahun",
+//            "beroperasi" => "Jumlah Aktif Beroperasi",
+//            "jumlahunit1" => "Jumlah Akhir Tahun",
+//            "perubahan" => "Perubahan",
+//            "survived1" => "Survived Tahun I",
+//            "survivalrate1" => "Survival Rate Tahun I",
+//            "survived2" => "Survived Tahun II",
+//            "survivalrate2" => "Survival Rate Tahun II",
+//            "survived3" => "Survived Tahun III",
+//            "survivalrate3" => "Survival Rate Tahun III",
+        );
+
+        if (Yii::$app->request->getIsPost()) {
+            //Wajib dipilih
+            if (sizeof($tahun) > 1) {
+                echo "<li>Tahun</li>";
+            }
+            if (sizeof($attributes) > 1) {
+                echo "<li>Attributes</li>";
+            }
+            if ($kdprop <> null && $kdprop <> "") {//Jika propinsi ada yang dipilih,
+                if ($kdkab == null || $kdkab == "") {
+                    echo "<li>Kabupaten</li>";
+                } elseif ($kdkec == null || $kdkec == "") {
+                    echo "<li>Kecamatan</li>";
+                } elseif ($kddesa == null || $kddesa == "") {
+                    echo "<li>Desa</li>";
+                }
+            }
+            //Optional
+            foreach ($attributes as $value) {
+                echo "<li>" . $variableList[$value] . "</li>";
+            }
+            if ($kdprop == null || $kdprop == "") {
+                echo "<li>Propinsi</li>";
+            }
+        } else {
+            echo "Invalid request.";
+        }
     }
 
 }

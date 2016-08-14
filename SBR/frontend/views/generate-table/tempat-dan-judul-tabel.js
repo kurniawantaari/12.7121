@@ -1,43 +1,42 @@
-    var tempat = "di Indonesia";
-    var locations = "Indonesia";
+//    var attributes=false;
+//    var years=false;
+//    $("#selectAttributes").change(function () {
+//    if($(this).val().length>1){attributes=true;}else{attributes=false;}});
+//    $("#selectYears").change(function () {
+//    if($(this).val().length>1){years=true;}else{years=false;}});
+
     $("#selectProvinces").change(function () {
         if ($("#selectProvinces").val() != "")
         {
-            $("#selectKabupaten").attr("disabled", false);
-            locations = "Propinsi";
+            vartempat = "Propinsi";
             tempat = "di Propinsi " + $("#selectProvinces option:selected").text() + ", Indonesia";
         } else
         {
-            $("#selectKabupaten").attr("disabled", true).empty().append("<option value=\'\'>-Pilih Kabupaten/Kota-</option>");
-            var tempat = "di Indonesia";
-            var locations = "Indonesia";
+            tempat = "di Indonesia";
+            vartempat = "Indonesia";
         }
     });
     $("#selectKabupaten").change(function () {
 
         if ($("#selectKabupaten").val() != "") {
-            $("#selectKecamatan").attr("disabled", false);
-            locations = "Kabupaten";
+            vartempat = "Kabupaten";
             tempat = "di Kabupaten " + $("#selectKabupaten option:selected").text()
                     + ", Propinsi " + $("#selectProvinces option:selected").text()
                     + ", Indonesia";
         } else {
-            $("#selectKecamatan").attr("disabled", true).empty().append("<option value=\'\'>-Pilih Kecamatan-</option>");
-            locations = "Propinsi";
+            vartempat = "Propinsi";
             tempat = "di Propinsi " + $("#selectProvinces option:selected").text() + ", Indonesia";
         }
     });
     $("#selectKecamatan").change(function () {
         if ($("#selectKecamatan").val() != "") {
-            $("#selectDesa").attr("disabled", false);
-            locations = "Kecamatan";
+            vartempat = "Kecamatan";
             tempat = "di Kecamatan " + $("#selectKecamatan option:selected").text()
                     + ", Kabupaten " + $("#selectKabupaten option:selected").text()
                     + ", Propinsi " + $("#selectProvinces option:selected").text()
                     + ", Indonesia";
         } else {
-            $("#selectDesa").attr("disabled", true).empty().append("<option value=\'\'>-Pilih Desa-</option>");
-            locations = "Kabupaten";
+            vartempat = "Kabupaten";
             tempat = "di Kabupaten " + $("#selectKabupaten option:selected").text()
                     + ", Propinsi " + $("#selectProvinces option:selected").text()
                     + ", Indonesia";
@@ -45,14 +44,14 @@
     });
     $("#selectDesa").change(function () {
         if ($("#selectDesa").val() != "") {
-            locations = "Desa";
+            vartempat = "Desa";
             tempat = "di Desa " + $("#selectDesa option:selected").text()
                     + ", Kecamatan " + $("#selectKecamatan option:selected").text()
                     + ", Kabupaten " + $("#selectKabupaten option:selected").text()
                     + ", Propinsi " + $("#selectProvinces option:selected").text()
                     + ", Indonesia";
         } else {
-            locations = "Kecamatan";
+            vartempat = "Kecamatan";
             tempat = "di Kecamatan " + $("#selectKecamatan option:selected").text()
                     + ", Kabupaten " + $("#selectKabupaten option:selected").text()
                     + ", Propinsi " + $("#selectProvinces option:selected").text()

@@ -5,12 +5,12 @@ namespace frontend\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use frontend\models\HistoryofTable;
+use frontend\models\HistoryTabel;
 
 /**
- * HistoryofTableSearch represents the model behind the search form about `frontend\models\HistoryofTable`.
+ * HistoryTabelSearch represents the model behind the search form about `frontend\models\HistoryTabel`.
  */
-class HistoryofTableSearch extends HistoryofTable
+class HistoryTabelSearch extends HistoryTabel
 {
     /**
      * @inheritdoc
@@ -18,8 +18,8 @@ class HistoryofTableSearch extends HistoryofTable
     public function rules()
     {
         return [
-            [['id', 'jumlah_hits', 'flag'], 'integer'],
-            [['nama_tabel'], 'safe'],
+            [['idtabel', 'jumlah_hits', 'flag'], 'integer'],
+            [['jenis'], 'safe'],
         ];
     }
 
@@ -41,7 +41,7 @@ class HistoryofTableSearch extends HistoryofTable
      */
     public function search($params)
     {
-        $query = HistoryofTable::find();
+        $query = HistoryTabel::find();
 
         // add conditions that should always apply here
 
@@ -59,12 +59,12 @@ class HistoryofTableSearch extends HistoryofTable
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
+            'idtabel' => $this->idtabel,
             'jumlah_hits' => $this->jumlah_hits,
             'flag' => $this->flag,
         ]);
 
-        $query->andFilterWhere(['like', 'nama_tabel', $this->nama_tabel]);
+        $query->andFilterWhere(['like', 'jenis', $this->jenis]);
 
         return $dataProvider;
     }

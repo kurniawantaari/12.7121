@@ -16,8 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php
     $form = ActiveForm::begin([
                 'id' => 'table-generator-form',
-                'options' => ['class' => 'form-horizontal','autofocus'=>true],
-        
+                'options' => ['class' => 'form-horizontal'],
     ]);
     ?>
     <h4 class="wizard-title">Step 1: Select Subject</h4>
@@ -28,8 +27,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'options' => [
             'placeholder' => 'Select Subject ...',
             'id' => 'selectSubject',
-            'onchange' => '$("select#selectAttributes").val("").trigger("change");'
-            . '$("select#selectYears").val("").trigger("change");'
+            'onchange' => '$("select#selectAttributes").select2("val", "", true);'
+            . '$("select#selectYears").select2("val", "", true);'
             . 'if ($(this).val() == "") {
                 $("select#selectAttributes").attr("disabled", true);
                 $("select#selectYears").attr("disabled", true);
@@ -51,8 +50,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]);
     ?>
-    <?= Html::button('Back', [ 'class' => 'btn btn-primary']) ?>
-            <?= Html::button('Next: Step2 Select Attributes and Years', [ 'class' => 'btn btn-primary']) ?>
+    <?= Html::button('Next: Step2: Select Attributes and Years', [ 'class' => 'btn btn-primary']) ?>
     <h4 class="wizard-title">Step 2: Select Attributes and Years</h4>
     <?=
     $form->field($model, 'attributes')->widget(Select2::classname(), [
@@ -64,7 +62,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'disabled' => true,
             'multiple' => true,
         ],
-        'theme' => Select2::THEME_KRAJEE,
         'pluginOptions' => [
             'allowClear' => true,
         ],
@@ -85,8 +82,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ])
     ?>
-    <?= Html::button('Back', [ 'class' => 'btn btn-primary']) ?>
-    <?= Html::button('Next: Step 3 Select Locations', [ 'class' => 'btn btn-primary',
+    <?= Html::button('Next: Select Locations', [ 'class' => 'btn btn-primary',
         'onclick' => '$.post("' . Url::to(['get-mandatoryvariables', 'attributes' => ''])
         . '"+$("#selectAttributes").val()'
         . '+"&tahun="+ $("#selectYears").val(),function (data) {'
@@ -103,12 +99,12 @@ $this->params['breadcrumbs'][] = $this->title;
         'language' => 'en',
         'options' => [
             'placeholder' => 'Select Province ...',
-            'multiple' => true,
+          //  'multiple' => true,
             'id' => 'selectProvinces',
             'onchange' => '$.post("' . Url::to(['get-kabupaten', 'kdprop' => '']) . '" + $(this).val(),
         function (data) {
-          $("select#selectKabupaten").val("").trigger("change");
-           
+          $("select#selectKabupaten").select2("val", "", true);
+            $("#selectKabupaten").empty();
             $("select#selectKabupaten").html(data);
             $("#selectDesa").attr("disabled", true);
             $("#selectKecamatan").attr("disabled", true);
@@ -132,12 +128,12 @@ if ($(this).val() == "" || $(this).val() == null) {
         'disabled' => true,
         'options' => [
             'placeholder' => 'Select Kabupaten/Kota...',
-            'multiple' => true,
+            //'multiple' => true,
             'id' => 'selectKabupaten',
             'onchange' => '$.post("' . Url::to(['get-kecamatan', 'kdkab' => '']) 
             . '" + $(this).val() + "&kdprop=" + $("#selectProvinces").val(),
         function (data) {
-            $("select#selectKecamatan").val("").trigger("change");
+            $("select#selectKecamatan").select2("val", "", true);
             $("#selectKecamatan").empty();
             $("select#selectKecamatan").html(data);
             $("#selectDesa").attr("disabled", true);
@@ -159,11 +155,11 @@ if ($(this).val() == "" || $(this).val() == null) {
         'disabled' => true,
         'options' => [
             'placeholder' => 'Select Kecamatan...',
-            'multiple' => true,
+            //'multiple' => true,
             'id' => 'selectKecamatan',
             'onchange' => '$.post("' . Url::to(['get-desa', 'kdkec' => '']) . '" + $(this).val() + "&kdprop=" + $("#selectProvinces").val() + "&kdkab=" + $("#selectKabupaten").val(),
         function (data) {
-            $("select#selectDesa").val("").trigger("change");
+            $("select#selectDesa").select2("val", "", true);
             $("#selectDesa").empty();
             $("select#selectDesa").html(data);
         });
@@ -183,7 +179,7 @@ if ($(this).val() == "" || $(this).val() == null) {
         'disabled' => true,
         'options' => [
             'placeholder' => 'Select Desa...',
-            'multiple' => true,
+         //   'multiple' => true,
             'id' => 'selectDesa',
         ],
         'pluginOptions' => [
@@ -191,9 +187,9 @@ if ($(this).val() == "" || $(this).val() == null) {
         ],
     ]);
     ?>
-    <?= Html::button('Back', [ 'class' => 'btn btn-primary']) ?>
+    
     <?php
-    echo Html::button('Next: Step 4 Select Variables', [ 'class' => 'btn btn-primary',
+    echo Html::button('Next: Select Variables', [ 'class' => 'btn btn-primary',
         'onclick' => '$.post("' . Url::to(['get-variablelist', 'kdprop' => '']) . '"+ $("#selectProvinces").val(),function (data) {
                 $("#optionalVariables").html(data);});'
         . '$.post("' . Url::to(['get-locationvariables', 'kdprop' => '']) . '"+ $("#selectProvinces").val()+ "&kdkab=" + $("#selectKabupaten").val() + "&kdkec=" + $("#selectKecamatan").val()+ "&kddesa=" + $("#selectDesa").val(),function (data) {
@@ -205,31 +201,32 @@ if ($(this).val() == "" || $(this).val() == null) {
     ?>
     <h4 class="wizard-title">Step 4: Select Variables</h4>
 
+    <?= $form->field($model, 'vvertikal')->textInput(['id' => 'vvertikal']) ?>
+    <?= $form->field($model, 'vhorizontal')->textInput(['id' => 'vhorizontal']) ?>
     <?php
-    echo $form->field($model, 'vvertikal')->widget(Select2::classname(), [
-        'data' => [],
-        'maintainOrder' => true,
-        'options' => [
-            'multiple' => true,
-            'id' => 'vvertikal',
-                    ],
-    ]);//->hiddenInput()->label(false);
-   
-    echo $form->field($model, 'vhorizontal')->widget(Select2::classname(), [
-        'data' => [],
-        'maintainOrder' => true,
-        'options' => [
-            'multiple' => true,
-            'id' => 'vhorizontal',
-        ],
-    ]);//->hiddenInput()->label(false);
+//    echo $form->field($model, 'vvertikal')->widget(Select2::classname(), [
+//        'data' => [],
+//        'maintainOrder' => true,
+//        'options' => [
+//            'multiple' => true,
+//            'id' => 'vvertikal',
+//        ],
+//    ]);
+//   
+//    echo $form->field($model, 'vhorizontal')->widget(Select2::classname(), [
+//        'data' => [],
+//        'maintainOrder' => true,
+//        'options' => [
+//            'multiple' => true,
+//            'id' => 'vhorizontal',
+//        ],
+//    ]);
     ?>
-    <?= Html::button('Map to Layout', [ 'class' => 'btn btn-info']) ?>
     <div class="select-variables">
 
         <div class="container-fluid">
             <div class=" col-xs-12 col-sm-4">
-                <p>select variables here</p>
+                <p>select element here</p>
                 <ul id="mandatoryVariables" class="mandatoryVariables" style="padding:5px;min-height: 50px;background:#eaeae1;">
                 </ul>
                 <ul id="locationVariables" class="locationVariables" style="padding:5px;min-height: 50px;background:#eaeae1;">
@@ -242,22 +239,18 @@ if ($(this).val() == "" || $(this).val() == null) {
                 <p>drop variable here</p>
 
                 <ul id="variabelVertikal" class="optionalVariables mandatoryVariables locationVariables col-xs-6 col-sm-5" style="min-height:200px;padding:2px 0 2px 0;background:whitesmoke">
-                    <p>drop variable vertical here</p>
 
                 </ul>
 
 
                 <ul id="variabelHorizontal" class="optionalVariables mandatoryVariables locationVariables col-xs-6 col-sm-7" style="min-height:100px;padding: 2px 0 2px 0;background:whitesmoke;border-left:dotted lightgrey 2px;">
-                    <p>drop variable horizontal here</p>
 
                 </ul>
 
             </div>
         </div>
-        <?= Html::button('Back', [ 'class' => 'btn btn-primary']) ?>
-        <?= Html::resetButton('Reset/New', [ 'class' => 'btn btn-warning']) ?>
         <?= Html::button('Simpan Struktur', ['class ' => 'btn btn-primary', 'id' => 'simpanStruktur']) ?>
-        <?= Html::submitButton('Generate Table', ['class ' => 'btn btn-success']) ?>
+        <?= Html::submitButton('Generate Table', ['class ' => 'btn btn-primary']) ?>
     </div>
     <?php ActiveForm::end() ?>
 </div>
@@ -362,8 +355,5 @@ $this->registerJS('
     })
     ;$("#vhorizontal").val(arrayhvar);
     });
-      //  $("#selectAttributes").select2({
-       // maximumSelectionLength: 2
-        //    });
 ');
 ?>

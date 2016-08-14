@@ -3,49 +3,37 @@
 namespace frontend\controllers;
 
 use Yii;
-use frontend\models\HistoryofTable;
-use frontend\models\HistoryofTableSearch;
+use frontend\models\HistoryTabel;
+use frontend\models\HistoryTabelSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
 
 /**
- * ManageTableHistoryController implements the CRUD actions for HistoryofTable model.
+ * HistoryTabelController implements the CRUD actions for HistoryTabel model.
  */
-class ManageTableHistoryController extends Controller {
+class HistoryTabelController extends Controller {
 
     /**
      * @inheritdoc
      */
     public function behaviors() {
         return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'only' => ['view', 'update', 'delete', 'create', 'index'],
-                'rules' => [
-                    [
-                        'actions' => ['view', 'update', 'delete', 'create', 'index'],
-                        'allow' => true,
-                        'roles' => ['manageUsers'],
-                    ],
-                ],
-            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['post'],
+                    'delete' => ['POST'],
                 ],
             ],
         ];
     }
 
     /**
-     * Lists all HistoryofTable models.
+     * Lists all HistoryTabel models.
      * @return mixed
      */
     public function actionIndex() {
-        $searchModel = new HistoryofTableSearch();
+        $searchModel = new HistoryTabelSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -55,7 +43,7 @@ class ManageTableHistoryController extends Controller {
     }
 
     /**
-     * Displays a single HistoryofTable model.
+     * Displays a single HistoryTabel model.
      * @param integer $id
      * @return mixed
      */
@@ -66,15 +54,15 @@ class ManageTableHistoryController extends Controller {
     }
 
     /**
-     * Creates a new HistoryofTable model.
+     * Creates a new HistoryTabel model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate() {
-        $model = new HistoryofTable();
+        $model = new HistoryTabel();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['view', 'id' => $model->idtabel]);
         } else {
             return $this->render('create', [
                         'model' => $model,
@@ -83,7 +71,7 @@ class ManageTableHistoryController extends Controller {
     }
 
     /**
-     * Updates an existing HistoryofTable model.
+     * Updates an existing HistoryTabel model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -92,7 +80,7 @@ class ManageTableHistoryController extends Controller {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['view', 'id' => $model->idtabel]);
         } else {
             return $this->render('update', [
                         'model' => $model,
@@ -101,7 +89,7 @@ class ManageTableHistoryController extends Controller {
     }
 
     /**
-     * Deletes an existing HistoryofTable model.
+     * Deletes an existing HistoryTabel model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -113,41 +101,20 @@ class ManageTableHistoryController extends Controller {
     }
 
     /**
-     * Finds the HistoryofTable model based on its primary key value.
+     * Finds the HistoryTabel model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return HistoryofTable the loaded model
+     * @return HistoryTabel the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id) {
-        
-        if (($model = HistoryofTable::findOne($id)) !== null) {
+        if (($model = HistoryTabel::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
 
-    public function actionDeleteSelected() {
-        $pk = Yii::$app->request->post('row_id');
-
-        foreach ($pk as $key => $value) {
-            $this->findModel($value)->delete();
-        }
-        Yii::$app->session->setFlash('success', 'delete selected record succeed.');
-        return $this->redirect(['index']);
-    }
-
-    public function actionAddToSuggestion() {
-        $pk = Yii::$app->request->post('row_id');
-
-        foreach ($pk as $key => $value) {
-            $model = $this->findModel($value);
-            $model->flag = 1;
-            $model->save();
-        }
-        Yii::$app->session->setFlash('success', 'Add to suggestion succeed.');
-        return $this->redirect(['index']);
-    }
+   
 
 }
