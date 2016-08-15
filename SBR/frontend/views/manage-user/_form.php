@@ -56,7 +56,7 @@ use yii\widgets\ActiveForm;
             <div id="collapsePassword" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingPassword">
                 <div class="panel-body">
                     <?php $idSelectedUser = $model->getOldAttribute("id");
-                    echo $idSelectedUser;?>
+                                  ?>
                      <?=Html::a('Change your password?', ['manage-user/change-password','id' =>$idSelectedUser]) ?>
 
                 </div>

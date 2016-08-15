@@ -34,13 +34,12 @@ AppAsset::register($this);
                 'brandLabel' => '<img src="favicon.png" class="pull-left"/><span>SBR</span>',
                 'brandUrl' => Yii::$app->homeUrl,
                 'options' => [
-                    'class' => 'navbar-fixed-top',
+                    'class' => 'navbar-fixed-top navbar-inverse',
                 ],
             ]);
             $menuItems = [
                 ['label' => 'Home', 'url' => ['/site/index']],
-                ['label' => 'About', 'url' => ['/site/about']],
-                ['label' => 'Contact', 'url' => ['/site/contact']],
+                // ['label' => 'Contact', 'url' => ['/site/contact']],
                 ['label' => 'Generate Table',
                     'items' => [
                         ['label' => 'Given Table', 'url' => ['/generate-table/generate-given-table']],
@@ -81,8 +80,10 @@ AppAsset::register($this);
                         . Html::endForm()
                         . '</li>';
 
+                $menuItems[]=['label' => 'About', 'url' => ['/site/about']];
                 $menuItems[] = ['label' => Yii::$app->user->identity->username,
                     'items' => $submenuUser];
+
             }
             echo Nav::widget([
 
@@ -105,14 +106,13 @@ AppAsset::register($this);
 
         <footer class="footer">
             <div class="container">
-                <p>&copy; Indonesian Statistical Business Register <?= date('Y') ?></p>
-                <p> Badan Pusat Statistik</p>
-                <p>(BPS - Statistics Indonesia)</p>
-                <p>Jl. Dr. Sutomo 6-8 Jakarta 10710 Indonesia, Telp (62-21) 3841195, 3842508, 3810291, Faks (62-21) 3857046</p>
-                <p>facebook https://www.facebook.com/pages/Badan-Pusat-Statistik/1394866840805957</p>
-                <p>twitter  https://www.twitter.com/bps_statistics</p>
-                 <!--<p class="pull-right"><?= Yii::powered() ?></p>-->
-            </div>
+                <a href="https://www.facebook.com/pages/Badan-Pusat-Statistik/1394866840805957"><kbd>facebook</kbd></a>
+                <a href="https://www.twitter.com/bps_statistics"><kbd>twitter</kbd></a>
+                <p class="footer-info text-center">
+                &copy;Statistical Business Register <?= date('Y') ?><br>
+                Badan Pusat Statistik - Statistics Indonesia<br>
+                Jl. Dr. Sutomo 6-8 Jakarta 10710 Indonesia<br> <i class="glyphicon glyphicon-phone-alt"></i>  (62-21) 3841195, 3842508, 3810291</p>
+                                </div>
         </footer>
 
         <?php $this->endBody() ?>

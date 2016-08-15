@@ -103,19 +103,19 @@ $this->params['breadcrumbs'][] = $this->title;
         'language' => 'en',
         'options' => [
             'placeholder' => 'Select Province ...',
-            'multiple' => true,
+          //  'multiple' => true,
             'id' => 'selectProvinces',
             'onchange' => '$.post("' . Url::to(['get-kabupaten', 'kdprop' => '']) . '" + $(this).val(),
         function (data) {
-          $("select#selectKabupaten").val("").trigger("change");
-           
             $("select#selectKabupaten").html(data);
+            $("select#selectKabupaten").val("").trigger("change");
             $("#selectDesa").attr("disabled", true);
             $("#selectKecamatan").attr("disabled", true);
-        });
+                    });
 
 if ($(this).val() == "" || $(this).val() == null) {
     $("#selectKabupaten").attr("disabled", true);
+
 } else {
     $("#selectKabupaten").attr("disabled", false);
 }
@@ -132,16 +132,15 @@ if ($(this).val() == "" || $(this).val() == null) {
         'disabled' => true,
         'options' => [
             'placeholder' => 'Select Kabupaten/Kota...',
-            'multiple' => true,
+           // 'multiple' => true,
             'id' => 'selectKabupaten',
             'onchange' => '$.post("' . Url::to(['get-kecamatan', 'kdkab' => '']) 
             . '" + $(this).val() + "&kdprop=" + $("#selectProvinces").val(),
         function (data) {
-            $("select#selectKecamatan").val("").trigger("change");
-            $("#selectKecamatan").empty();
             $("select#selectKecamatan").html(data);
+            $("select#selectKecamatan").val("").trigger("change");
             $("#selectDesa").attr("disabled", true);
-        });
+                    });
 if ($(this).val() == "" || $(this).val() == null) {
     $("#selectKecamatan").attr("disabled", true);
 } else {
@@ -159,14 +158,13 @@ if ($(this).val() == "" || $(this).val() == null) {
         'disabled' => true,
         'options' => [
             'placeholder' => 'Select Kecamatan...',
-            'multiple' => true,
+            //'multiple' => true,
             'id' => 'selectKecamatan',
             'onchange' => '$.post("' . Url::to(['get-desa', 'kdkec' => '']) . '" + $(this).val() + "&kdprop=" + $("#selectProvinces").val() + "&kdkab=" + $("#selectKabupaten").val(),
         function (data) {
-            $("select#selectDesa").val("").trigger("change");
-            $("#selectDesa").empty();
             $("select#selectDesa").html(data);
-        });
+             $("select#selectDesa").val("").trigger("change");
+                     });
 if ($(this).val() == "" || $(this).val() == null) {
     $("#selectDesa").attr("disabled", true);
 } else {
@@ -183,9 +181,9 @@ if ($(this).val() == "" || $(this).val() == null) {
         'disabled' => true,
         'options' => [
             'placeholder' => 'Select Desa...',
-            'multiple' => true,
+           // 'multiple' => true,
             'id' => 'selectDesa',
-        ],
+            ],
         'pluginOptions' => [
             'allowClear' => true,
         ],
@@ -198,9 +196,7 @@ if ($(this).val() == "" || $(this).val() == null) {
                 $("#optionalVariables").html(data);});'
         . '$.post("' . Url::to(['get-locationvariables', 'kdprop' => '']) . '"+ $("#selectProvinces").val()+ "&kdkab=" + $("#selectKabupaten").val() + "&kdkec=" + $("#selectKecamatan").val()+ "&kddesa=" + $("#selectDesa").val(),function (data) {
                '.'$("#locationVariables").html(data);'
-        //.        ' $("#vvertikal").html(data);'
-        //.'       $("#vhorizontal").html(data);'
-        . '});
+                . '});
                 ']);
     ?>
     <h4 class="wizard-title">Step 4: Select Variables</h4>

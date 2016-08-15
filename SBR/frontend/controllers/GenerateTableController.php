@@ -47,6 +47,9 @@ class GenerateTableController extends Controller {
 
     public function actionGetDesa($kdprop, $kdkab, $kdkec) {
         if (Yii::$app->request->getIsPost()) {
+            $kdprop1= explode(",", $kdprop);
+            $kdkab1= explode(",", $kdkab);
+            $kdkec1= explode(",", $kdkec);
             $desa = Desa::find()->where(['kdprop' => $kdprop])
                             ->andWhere(['kdkab' => $kdkab])
                             ->andWhere(['kdkec' => $kdkec])->all();
@@ -67,6 +70,9 @@ class GenerateTableController extends Controller {
 
     public function actionGetKecamatan($kdprop, $kdkab) {
         if (Yii::$app->request->getIsPost()) {
+            //$kdkab1= explode(",", $kdkab);
+              //  $kdprop1= explode(",", $kdprop);
+
             $kecamatan = Kecamatan::find()
                             ->where(['kdprop' => $kdprop])
                             ->andWhere(['kdkab' => $kdkab])->all();
@@ -85,30 +91,22 @@ class GenerateTableController extends Controller {
         }
     }
 
-    public function actionGetKabupaten($kdprop,$nmpro) {
+    public function actionGetKabupaten($kdprop) {
         if (Yii::$app->request->getIsPost()) {
-          
-          $kdprop1 = explode(",", $kdprop);
-          $nmprop1 = explode(",", $nmprop);
-            foreach ($kdprop1 as $id) {
-                echo "<optgroup value='" . $id ."name='" .$nmprop1."'>";
-                $kabupaten = Kabupaten::find()
-                        ->where(['kdprop' => $id,])
+             $kabupaten = Kabupaten::find()
+                        ->where(['kdprop' => $kdprop,])
                         ->andWhere(['not', ['kdkab' => '00']])
                         ->all();
                 $countKabupaten = Kabupaten::find()
-                        ->where(['kdprop' => $id,])
+                        ->where(['kdprop' => $kdprop,])
                         ->andWhere(['not', ['kdkab' => '00']])
                         ->count();
                 if ($countKabupaten > 0) {
                     foreach ($kabupaten as $kabupaten) {
                         echo "<option value='" . $kabupaten->kdkab . "'>" . $kabupaten->nmkab . "</option>";
                     }
-                    echo "</optgroup>";
-                } else {
-                    echo"<option></option>";
-                }
-            }
+                                   }
+            
         } else {
             echo "Invalid request.";
         }
