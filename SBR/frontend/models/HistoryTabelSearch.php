@@ -18,8 +18,8 @@ class HistoryTabelSearch extends HistoryTabel
     public function rules()
     {
         return [
-            [['idtabel', 'jumlah_hits', 'flag'], 'integer'],
-            [['jenis'], 'safe'],
+            [['idtabel'], 'integer'],
+            [['nmtabel', 'jenis', 'variabelvertikal', 'variabelhorizontal'], 'safe'],
         ];
     }
 
@@ -60,11 +60,12 @@ class HistoryTabelSearch extends HistoryTabel
         // grid filtering conditions
         $query->andFilterWhere([
             'idtabel' => $this->idtabel,
-            'jumlah_hits' => $this->jumlah_hits,
-            'flag' => $this->flag,
-        ]);
+                    ]);
 
-        $query->andFilterWhere(['like', 'jenis', $this->jenis]);
+        $query->andFilterWhere(['like', 'nmtabel', $this->nmtabel])
+            ->andFilterWhere(['like', 'jenis', $this->jenis])
+            ->andFilterWhere(['like', 'variabelvertikal', $this->variabelvertikal])
+            ->andFilterWhere(['like', 'variabelhorizontal', $this->variabelhorizontal]);
 
         return $dataProvider;
     }

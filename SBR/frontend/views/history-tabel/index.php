@@ -25,9 +25,12 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             'idtabel',
+            'nmtabel',
             'jenis',
-            'jumlah_hits',
-            'flag',
+            'variabelvertikal',
+            'variabelhorizontal',
+            // 'jumlah_hits',
+            // 'flag',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

@@ -33,10 +33,7 @@ class m160719_172849_jumlah_unit extends Migration {
             'beroperasi' => $this->bigInteger(), //jumlah yang aktif produksi/beroperasi = count yang aktif/alih usaha
             'jumlahunit1' => $this->bigInteger(), //jumlah akhir tahun = count yang blm berproduksi/tutup sementara       
             'perubahan' => $this->bigInteger(),
-            'perubahanpersen' => $this->double(),
-            'entryrate' => $this->double(),
-            'exitrate' => $this->double()
-                ], $tableOptions);
+           ], $tableOptions);
     }
 
     public function down() {

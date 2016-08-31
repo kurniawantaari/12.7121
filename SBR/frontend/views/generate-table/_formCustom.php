@@ -6,18 +6,26 @@ use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\helpers\Html;
+use frontend\models\Kategori;
+use frontend\models\Unitstatistik;
+use frontend\models\Statusperusahaan;
+use frontend\models\Institusi;
+use frontend\models\Kepemilikan;
+use frontend\models\Jaringanusaha;
 use frontend\models\Propinsi;
+use yii\widgets\Pjax;
 
-$this->title = 'Tes Table Generator';
+$this->title = 'Table Generator';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="generate-table">
     <h1><?= Html::encode($this->title) ?></h1>
+
     <?php
     $form = ActiveForm::begin([
                 'id' => 'table-generator-form',
-                'options' => ['class' => 'form-horizontal','autofocus'=>true],
-        
+                'method' => 'post',
+                'options' => ['class' => 'form-horizontal'],
     ]);
     ?>
     <h4 class="wizard-title">Step 1: Select Subject</h4>
@@ -49,10 +57,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'pluginOptions' => [
             'allowClear' => true,
         ],
-    ]);
+    ])->label("Subject");
     ?>
-    <?= Html::button('Back', [ 'class' => 'btn btn-primary']) ?>
-            <?= Html::button('Next: Step2 Select Attributes and Years', [ 'class' => 'btn btn-primary']) ?>
+    <?= Html::button('Next: Step2 Select Attributes and Years', [ 'class' => 'btn btn-primary', 'id' => 'btn-next-to-step2']) ?>
+
     <h4 class="wizard-title">Step 2: Select Attributes and Years</h4>
     <?=
     $form->field($model, 'attributes')->widget(Select2::classname(), [
@@ -68,7 +76,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'pluginOptions' => [
             'allowClear' => true,
         ],
-    ])
+    ])->label("Attributes")
     ?>
     <?=
     $form->field($model, 'years')->widget(Select2::classname(), [
@@ -83,27 +91,21 @@ $this->params['breadcrumbs'][] = $this->title;
         'pluginOptions' => [
             'allowClear' => true,
         ],
-    ])
+    ])->label("Years")
     ?>
-    <?= Html::button('Back', [ 'class' => 'btn btn-primary']) ?>
-    <?= Html::button('Next: Step 3 Select Locations', [ 'class' => 'btn btn-primary',
-        'onclick' => '$.post("' . Url::to(['get-mandatoryvariables', 'attributes' => ''])
-        . '"+$("#selectAttributes").val()'
-        . '+"&tahun="+ $("#selectYears").val(),function (data) {'
-        .'$("#mandatoryVariables").html(data);'
-        .'});'
-    ])?>
-    <div id="result"></div>
+    <?= Html::button('Back', [ 'class' => 'btn btn-primary', 'id' => 'btn-back-to-step1']) ?>
+    <?=
+    Html::button('Next: Step 3 Select Locations', [ 'class' => 'btn btn-primary', 'id' => 'btn-next-to-step3'])
+    ?>
     <h4 class="wizard-title">Step 3: Select Locations</h4>
     <?php
-// Parent Propinsi
     echo $form->field($model, 'kdprop')->widget(Select2::classname(), [
         'data' => ArrayHelper::map(Propinsi::find()->where(['not', ['kdprop' => '00']])
-                ->andWhere(['not', ['kdprop' => '95']])->all(), 'kdprop', 'nmprop'),
+                        ->andWhere(['not', ['kdprop' => '95']])->all(), 'kdprop', 'nmprop'),
         'language' => 'en',
         'options' => [
-            'placeholder' => 'Select Province ...',
-          //  'multiple' => true,
+            'placeholder' => 'Select Provinsi ...',
+            //  'multiple' => true,
             'id' => 'selectProvinces',
             'onchange' => '$.post("' . Url::to(['get-kabupaten', 'kdprop' => '']) . '" + $(this).val(),
         function (data) {
@@ -124,17 +126,16 @@ if ($(this).val() == "" || $(this).val() == null) {
         'pluginOptions' => [
             'allowClear' => true,
         ],
-    ]);
-
+    ])->label("Provinsi");
     echo $form->field($model, 'kdkab')->widget(Select2::classname(), [
         'data' => [],
         'language' => 'en',
         'disabled' => true,
         'options' => [
             'placeholder' => 'Select Kabupaten/Kota...',
-           // 'multiple' => true,
+            // 'multiple' => true,
             'id' => 'selectKabupaten',
-            'onchange' => '$.post("' . Url::to(['get-kecamatan', 'kdkab' => '']) 
+            'onchange' => '$.post("' . Url::to(['get-kecamatan', 'kdkab' => ''])
             . '" + $(this).val() + "&kdprop=" + $("#selectProvinces").val(),
         function (data) {
             $("select#selectKecamatan").html(data);
@@ -151,7 +152,7 @@ if ($(this).val() == "" || $(this).val() == null) {
         'pluginOptions' => [
             'allowClear' => true,
         ],
-    ]);
+    ])->label("Kabupaten");
     echo $form->field($model, 'kdkec')->widget(Select2::classname(), [
         'data' => [],
         'language' => 'en',
@@ -174,62 +175,157 @@ if ($(this).val() == "" || $(this).val() == null) {
         'pluginOptions' => [
             'allowClear' => true,
         ],
-    ]);
+    ])->label("Kecamatan");
     echo $form->field($model, 'kddesa')->widget(Select2::classname(), [
         'data' => [],
         'language' => 'en',
         'disabled' => true,
         'options' => [
             'placeholder' => 'Select Desa...',
-           // 'multiple' => true,
+            // 'multiple' => true,
             'id' => 'selectDesa',
-            ],
+        ],
         'pluginOptions' => [
             'allowClear' => true,
         ],
-    ]);
+    ])->label("Desa");
     ?>
-    <?= Html::button('Back', [ 'class' => 'btn btn-primary']) ?>
+    <?= Html::button('Back', [ 'class' => 'btn btn-primary', 'id' => 'btn-back-to-step2']) ?>
     <?php
-    echo Html::button('Next: Step 4 Select Variables', [ 'class' => 'btn btn-primary',
-        'onclick' => '$.post("' . Url::to(['get-variablelist', 'kdprop' => '']) . '"+ $("#selectProvinces").val(),function (data) {
-                $("#optionalVariables").html(data);});'
-        . '$.post("' . Url::to(['get-locationvariables', 'kdprop' => '']) . '"+ $("#selectProvinces").val()+ "&kdkab=" + $("#selectKabupaten").val() + "&kdkec=" + $("#selectKecamatan").val()+ "&kddesa=" + $("#selectDesa").val(),function (data) {
-               '.'$("#locationVariables").html(data);'
-                . '});
-                ']);
+    echo Html::button('Next: Step 4 Select Variables', [ 'class' => 'btn btn-primary', 'id' => 'btn-next-to-step4']);
     ?>
     <h4 class="wizard-title">Step 4: Select Variables</h4>
-
-    <?php
-    echo $form->field($model, 'vvertikal')->widget(Select2::classname(), [
-        'data' => [],
-        'maintainOrder' => true,
+    <?=
+    $form->field($model, 'kdkategori')->widget(Select2::classname(), [
+        'data' => ArrayHelper::map(Kategori::find()->where(['tahun' => '2015'])->all(), 'kdkategori', 'nmkategori'),
+        'language' => 'en',
         'options' => [
+            'placeholder' => 'Select Kategori...',
+            'id' => 'selectKategori',
             'multiple' => true,
-            'id' => 'vvertikal',
-                    ],
-    ]);//->hiddenInput()->label(false);
-   
-    echo $form->field($model, 'vhorizontal')->widget(Select2::classname(), [
-        'data' => [],
-        'maintainOrder' => true,
-        'options' => [
-            'multiple' => true,
-            'id' => 'vhorizontal',
+            'onchange' => '$("select#selectKbli").val("").trigger("change");
+                $("select#selectKbli").attr("disabled", true);'
         ],
-    ]);//->hiddenInput()->label(false);
+        'pluginOptions' => [
+            'allowClear' => true,
+        ],
+    ])->label("Kategori")
     ?>
-    <?= Html::button('Map to Layout', [ 'class' => 'btn btn-info']) ?>
-    <div class="select-variables">
+    <?php
+    echo Html::button('Filter Kbli', [ 'class' => 'btn btn-primary',
+        'onclick' => 'if($("#selectKategori").val()!=null&&$("#selectKategori").val()!=""){$.post("' . Url::to(['get-kbli', 'kdkategori' => '']) . '" + $("#selectKategori").val(), function (data) {
+    $("#selectKbli").html(data);$("#selectKbli").attr("disabled",false);
+});}else{window.alert("tidak ada kategori yang dipilih");}']);
+    ?>
+    <?=
+    $form->field($model, 'kdkbli')->widget(Select2::classname(), [
+        'data' => [],
+        'language' => 'en',
+        'options' => [
+            'placeholder' => 'Select KBLI...',
+            'id' => 'selectKbli',
+            'multiple' => true,
+            'disabled' => true,
+        ],
+        'pluginOptions' => [
+            'allowClear' => true,
+        ],
+    ])->label("KBLI")
+    ?>
+    <?=
+    $form->field($model, 'unitstatistik')->widget(Select2::classname(), [
+        'data' => ArrayHelper::map(Unitstatistik::find()->all(), 'kdsu', 'nmsu'),
+        'language' => 'en',
+        'options' => [
+            'placeholder' => 'Select Unit Statistik...',
+            'id' => 'selectUnitstatistik',
+            'multiple' => true,
+        ],
+        'pluginOptions' => [
+            'allowClear' => true,
+        ],
+    ])->label("Unit Statistik")
+    ?>
+    <?=
+    $form->field($model, 'statusperusahaan')->widget(Select2::classname(), [
+        'data' => ArrayHelper::map(Statusperusahaan::find()->all(), 'kdkondisi', 'nmkondisi'),
+        'language' => 'en',
+        'options' => [
+            'placeholder' => 'Select Status Perusahaan...',
+            'id' => 'selectStatusperusahaan',
+            'multiple' => true,
+        ],
+        'pluginOptions' => [
+            'allowClear' => true,
+        ],
+    ])->label("Status Perusahaan")
+    ?>
 
+    <?=
+    $form->field($model, 'institusi')->widget(Select2::classname(), [
+        'data' => ArrayHelper::map(Institusi::find()->all(), 'kdinstitusi', 'nminstitusi'),
+        'language' => 'en',
+        'options' => [
+            'placeholder' => 'Select Sektor Institusi...',
+            'id' => 'selectInstitusi',
+            'multiple' => true,
+        ],
+        'pluginOptions' => [
+            'allowClear' => true,
+        ],
+    ])->label("Sektor Institusi")
+    ?>
+    <?=
+    $form->field($model, 'kepemilikan')->widget(Select2::classname(), [
+        'data' => ArrayHelper::map(Kepemilikan::find()->all(), 'kdkepemilikan', 'nmkepemilikan'),
+        'language' => 'en',
+        'options' => [
+            'placeholder' => 'Select Kepemilikan...',
+            'id' => 'selectKepemilikan',
+            'multiple' => true,
+        ],
+        'pluginOptions' => [
+            'allowClear' => true,
+        ],
+    ])->label('Kepemilikan')
+    ?>
+    <?=
+    $form->field($model, 'jaringanusaha')->widget(Select2::classname(), [
+        'data' => ArrayHelper::map(Jaringanusaha::find()->all(), 'kdjaringanusaha', 'nmjaringanusaha'),
+        'language' => 'en',
+        'options' => [
+            'placeholder' => 'Select Jaringan Usaha...',
+            'id' => 'selectJaringanusaha',
+            'multiple' => true,
+        ],
+        'pluginOptions' => [
+            'allowClear' => true,
+        ],
+    ])->label("Jaringan Usaha")
+    ?>
+    <?= Html::button('Back', [ 'class' => 'btn btn-primary', 'id' => 'btn-back-to-step3']) ?>
+    <?=
+    Html::button('Next: Step 5 Select Layout', [ 'class' => 'btn btn-primary', 'id' => 'btn-next-to-step5',
+        'onclick' => '$.post("' . Url::to(['get-variables', 'kdkategori' => '']) . '"+ $("#selectKategori").val()
+            + "&kdkbli=" + $("#selectKbli").val()
+            + "&kdsu=" + $("#selectUnitstatistik").val()
+            + "&kdkondisi=" + $("#selectStatusperusahaan").val()
+            + "&kdinstitusi=" + $("#selectInstitusi").val()
+            + "&kdkepemilikan=" + $("#selectKepemilikan").val()
+            + "&kdjaringanusaha=" + $("#selectJaringanusaha").val()
+            + "&attributes=" +$("#selectAttributes").val()
+            + "&tahun="+ $("#selectYears").val()
+            + "&kdprop="+ $("#selectProvinces").val()
+            + "&kdkab=" + $("#selectKabupaten").val()
+            + "&kdkec=" + $("#selectKecamatan").val()
+            + "&kddesa=" + $("#selectDesa").val()
+            ,function (data) {$("#optionalVariables").html(data);});'])
+    ?>
+    <h4 class="wizard-title">Step 5: Select Layout</h4>
+    <div class="select-variables">
         <div class="container-fluid">
             <div class=" col-xs-12 col-sm-4">
                 <p>select variables here</p>
-                <ul id="mandatoryVariables" class="mandatoryVariables" style="padding:5px;min-height: 50px;background:#eaeae1;">
-                </ul>
-                <ul id="locationVariables" class="locationVariables" style="padding:5px;min-height: 50px;background:#eaeae1;">
-                </ul>
                 <ul id="optionalVariables" class="optionalVariables" style="padding:5px;min-height: 50px;background:#eaeae1;">
                 </ul>
             </div>
@@ -237,129 +333,118 @@ if ($(this).val() == "" || $(this).val() == null) {
             <div class="col-xs-12 col-sm-8 drop">  
                 <p>drop variable here</p>
 
-                <ul id="variabelVertikal" class="optionalVariables mandatoryVariables locationVariables col-xs-6 col-sm-5" style="min-height:200px;padding:2px 0 2px 0;background:whitesmoke">
+                <ul id="variabelVertikal" class="optionalVariables col-xs-6 col-sm-5" style="min-height:200px;padding:2px 0 2px 0;background:whitesmoke">
                     <p>drop variable vertical here</p>
 
                 </ul>
 
 
-                <ul id="variabelHorizontal" class="optionalVariables mandatoryVariables locationVariables col-xs-6 col-sm-7" style="min-height:100px;padding: 2px 0 2px 0;background:whitesmoke;border-left:dotted lightgrey 2px;">
+                <ul id="variabelHorizontal" class="optionalVariables col-xs-6 col-sm-7" style="min-height:100px;padding: 2px 0 2px 0;background:whitesmoke;border-left:dotted lightgrey 2px;">
                     <p>drop variable horizontal here</p>
 
                 </ul>
 
             </div>
         </div>
-        <?= Html::button('Back', [ 'class' => 'btn btn-primary']) ?>
-        <?= Html::resetButton('Reset/New', [ 'class' => 'btn btn-warning']) ?>
-        <?= Html::button('Simpan Struktur', ['class ' => 'btn btn-primary', 'id' => 'simpanStruktur']) ?>
-        <?= Html::submitButton('Generate Table', ['class ' => 'btn btn-success']) ?>
+        <?php
+        echo $form->field($model, 'vvertikal')->textInput(['id' => 'vvertikal', 'class' => 'hidden'])->label(false);
+        echo $form->field($model, 'vhorizontal')->textInput(['id' => 'vhorizontal', 'class' => 'hidden'])->label(false);
+        echo Html::button('Summary', ['class ' => 'btn btn-primary', 'id' => 'summary']);
+        ?>
+        <h4>Summary:</h4>
+        <p id="summaryText" class="well">
+
+        </p>
+        <?= Html::button('Back', [ 'class' => 'btn btn-primary', 'id' => 'btn-back-to-step4']) ?>
+        <?= Html::resetButton('Reset/New', ['class' => 'btn btn-warning']) ?>
+        <?= Html::submitButton('Generate Table', ['class ' => 'btn btn-success disabled', 'id' => 'generateTable']) ?>
     </div>
     <?php ActiveForm::end() ?>
-</div>
+
+    <div id="result"></div>
+</div>  
+
+
 
 <?php
 $css = <<< CSS
-            /* ---- variables---- */
     .drop{
        background:#eaeae1; 
         padding:10px;
    }
-        #optionalVariables li, #locationVariables li,#mandatoryVariables li,#variabelVertikal li,#variabelHorizontal li {
-        background-color: #ffad33;/*item yang di-drag n drop*/
+        #optionalVariables li,#variabelVertikal li,#variabelHorizontal li {
         padding: 5px;
         margin: 2px;
         list-style-position: inside;
         list-style-type: none;
     }
-
     .drop-placeholder {/*placeholder=pembantu dimana item akan ditempatkan*/
         background-color:transparent !important;
         border: 2px dashed darkorange;
             }
-       .watermark {
-    opacity: 0.5;
-    color: blue;
-    position: absolute;
-    top: 50%;
-        
-        
-    
-}
+        .hidden{
+            visibility:hidden;}
 CSS;
 $this->registerCss($css);
-
 $this->registerJS('
-        $("#mandatoryVariables, #variabelHorizontal,#variabelVertikal").sortable({
-        items: "> li",
-        connectWith: ".mandatoryVariables",
-        // axis: "x" //only horizontally or vertically
-        cancel: "a.ui-icon", // clicking an icon wont initiate dragging
-        containment: $(".select-variables"),
-        cursor: "move",
-        //handle:".handle"
-        //helper: "clone",
-        // forceHelperSize: false,
-        //opacity: 0.7, //opacity helper
-        dropOnEmpty: true,
-        placeholder: "drop-placeholder",
-        forcePlaceholderSize: true,
-        revert: true,
-        //scroll:false
-        tolerance: "pointer",
-    }).disableSelection();
-     $("#locationVariables, #variabelHorizontal,#variabelVertikal").sortable({
-        items: "> li",
-        connectWith: ".locationVariables",
-        // axis: "x" //only horizontally or vertically
-        cancel: "a.ui-icon", // clicking an icon wont initiate dragging
-        containment: $(".select-variables"),
-        cursor: "move",
-        //handle:".handle"
-        //helper: "clone",
-        // forceHelperSize: false,
-        //opacity: 0.7, //opacity helper
-        dropOnEmpty: true,
-        placeholder: "drop-placeholder",
-        forcePlaceholderSize: true,
-        revert: true,
-        //scroll:false
-        tolerance: "pointer",
-    }).disableSelection();
+    
     $("#optionalVariables, #variabelHorizontal,#variabelVertikal").sortable({
         items: "> li",
         connectWith: ".optionalVariables",
-        // axis: "x" //only horizontally or vertically
-        cancel: "a.ui-icon", // clicking an icon wont initiate dragging
         containment: $(".select-variables"),
         cursor: "move",
-        //handle:".handle"
-        //helper: "clone",
-        // forceHelperSize: false,
-        //opacity: 0.7, //opacity helper
         dropOnEmpty: true,
         placeholder: "drop-placeholder",
         forcePlaceholderSize: true,
         revert: true,
-        //scroll:false
-        tolerance: "pointer",
+        tolerance: "pointer"
     }).disableSelection();
-    $("#simpanStruktur").click(function(){
-    var arrayvvar="";
-    $("ul#variabelVertikal" ).children("li").each(function() {
-    var v=$(this).attr("value");
-    arrayvvar=arrayvvar+",,"+v;
-    })
-    ;$("#vvertikal").val(arrayvvar);
-    var arrayhvar="";
-    $("ul#variabelHorizontal" ).children("li").each(function() {
-    var v=$(this).attr("value");
-    arrayhvar=arrayhvar+",,"+v;
-    })
-    ;$("#vhorizontal").val(arrayhvar);
+    $("#summary").click(function () {
+        var arrayvvar = "";
+        $("ul#variabelVertikal").children("li").each(function () {
+            var v = $(this).attr("value");
+            arrayvvar = arrayvvar + "," + v;
+        });
+        $("#vvertikal").val(arrayvvar);
+        var arrayhvar = "";
+        $("ul#variabelHorizontal").children("li").each(function () {
+            var v = $(this).attr("value");
+            arrayhvar = arrayhvar + "," + v;
+        });
+        $("#vhorizontal").val(arrayhvar);
+        var a = $("#vvertikal").val();
+        var b = $("#vhorizontal").val();
+        var c = $("#selectSubject").val();
+        var d = $("#selectAttributes").val();
+        var e = $("#selectYears").val();
+        var f = $("#selectProvinces").val();
+        var g = $("#selectKabupaten").val();
+        var h = $("#selectKecamatan").val();
+        var i = $("#selectDesa").val();
+        var j = $("#selectKategori").val();
+        var k = $("#selectKbli").val();
+        var l = $("#selectUnitstatistik").val();
+        var m = $("#selectStatusperusahaan").val();
+        var n = $("#selectInstitusi").val();
+        var o = $("#selectKepemilikan").val();
+        var p = $("#selectJaringanusaha").val();
+        $("#summaryText").html("variabel vertikal:" + a + "<br>" +
+                "variabel horisontal:" + b + "<br>" +
+                "subject:" + c + "<br>" +
+                "attr:" + d + "<br>" +
+                "thn:" + e + "<br>" +
+                "prop:" + f + "<br>" +
+                "kab:" + g + "<br>" +
+                "kec:" + h + "<br>" +
+                "desa:" + i + "<br>" +
+                "kategori:" + j + "<br>" +
+                "kbli:" + k + "<br>" +
+                "unit statistik:" + l + "<br>" +
+                "status:" + m + "<br>" +
+                "institusi:" + n + "<br>" +
+                "kepemilikan:" + o + "<br>" +
+                "jaringan usaha:" + p);
+        $("#generateTable").removeClass("disabled");
     });
-      //  $("#selectAttributes").select2({
-       // maximumSelectionLength: 2
-        //    });
 ');
 ?>

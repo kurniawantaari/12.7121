@@ -1,11 +1,3 @@
-Yang perlu dibuat:
-
-Kesimpulan
-Saran
-Lampiran 5. Implementasi Antarmuka
-Lampiran 6. Hasil Pengujian Blackbox Testing
-Daftar Pustaka
-
 User akun - password -3
 
 sbr

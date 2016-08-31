@@ -17,11 +17,17 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'idtabel') ?>
 
+    <?= $form->field($model, 'nmtabel') ?>
+
     <?= $form->field($model, 'jenis') ?>
 
-    <?= $form->field($model, 'jumlah_hits') ?>
+    <?= $form->field($model, 'variabelvertikal') ?>
 
-    <?= $form->field($model, 'flag') ?>
+    <?= $form->field($model, 'variabelhorizontal') ?>
+
+    <?php // echo $form->field($model, 'jumlah_hits') ?>
+
+    <?php // echo $form->field($model, 'flag') ?>
 
     <div class="form-group">
         <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>

@@ -12,7 +12,13 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
+    <?= $form->field($model, 'nmtabel')->textInput() ?>
+
     <?= $form->field($model, 'jenis')->textInput() ?>
+
+    <?= $form->field($model, 'variabelvertikal')->textInput() ?>
+
+    <?= $form->field($model, 'variabelhorizontal')->textInput() ?>
 
     <?= $form->field($model, 'jumlah_hits')->textInput() ?>
 

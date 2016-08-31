@@ -9,12 +9,12 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use yii\data\SqlDataProvider;
-use \frontend\models\GeneratorTable;
-use frontend\models\Propinsi;
+use frontend\models\GeneratorTableForm;
 use frontend\models\Kabupaten;
 use frontend\models\Kecamatan;
 use frontend\models\Desa;
 use frontend\models\Tahun;
+use frontend\models\Kbli;
 
 class GenerateTableController extends Controller {
 
@@ -47,9 +47,9 @@ class GenerateTableController extends Controller {
 
     public function actionGetDesa($kdprop, $kdkab, $kdkec) {
         if (Yii::$app->request->getIsPost()) {
-            $kdprop1= explode(",", $kdprop);
-            $kdkab1= explode(",", $kdkab);
-            $kdkec1= explode(",", $kdkec);
+            $kdprop1 = array_filter(explode(",", str_replace("null", "", $kdprop)));
+            $kdkab1 = array_filter(explode(",", str_replace("null", "", $kdkab)));
+            $kdkec1 = array_filter(explode(",", str_replace("null", "", $kdkec)));
             $desa = Desa::find()->where(['kdprop' => $kdprop])
                             ->andWhere(['kdkab' => $kdkab])
                             ->andWhere(['kdkec' => $kdkec])->all();
@@ -70,8 +70,8 @@ class GenerateTableController extends Controller {
 
     public function actionGetKecamatan($kdprop, $kdkab) {
         if (Yii::$app->request->getIsPost()) {
-            //$kdkab1= explode(",", $kdkab);
-              //  $kdprop1= explode(",", $kdprop);
+//$kdkab1= explode(",", $kdkab);
+//  $kdprop1= explode(",", $kdprop);
 
             $kecamatan = Kecamatan::find()
                             ->where(['kdprop' => $kdprop])
@@ -93,20 +93,19 @@ class GenerateTableController extends Controller {
 
     public function actionGetKabupaten($kdprop) {
         if (Yii::$app->request->getIsPost()) {
-             $kabupaten = Kabupaten::find()
-                        ->where(['kdprop' => $kdprop,])
-                        ->andWhere(['not', ['kdkab' => '00']])
-                        ->all();
-                $countKabupaten = Kabupaten::find()
-                        ->where(['kdprop' => $kdprop,])
-                        ->andWhere(['not', ['kdkab' => '00']])
-                        ->count();
-                if ($countKabupaten > 0) {
-                    foreach ($kabupaten as $kabupaten) {
-                        echo "<option value='" . $kabupaten->kdkab . "'>" . $kabupaten->nmkab . "</option>";
-                    }
-                                   }
-            
+            $kabupaten = Kabupaten::find()
+                    ->where(['kdprop' => $kdprop,])
+                    ->andWhere(['not', ['kdkab' => '00']])
+                    ->all();
+            $countKabupaten = Kabupaten::find()
+                    ->where(['kdprop' => $kdprop,])
+                    ->andWhere(['not', ['kdkab' => '00']])
+                    ->count();
+            if ($countKabupaten > 0) {
+                foreach ($kabupaten as $kabupaten) {
+                    echo "<option value='" . $kabupaten->kdkab . "'>" . $kabupaten->nmkab . "</option>";
+                }
+            }
         } else {
             echo "Invalid request.";
         }
@@ -140,62 +139,85 @@ class GenerateTableController extends Controller {
         }
     }
 
-    public function actionGetMandatoryvariables($attributes, $tahun) {
+    public function actionGetVariables($kdkategori, $kdkbli, $kdsu, $kdkondisi, $kdinstitusi, $kdkepemilikan, $kdjaringanusaha, $kdprop, $kdkab, $kdkec, $kddesa, $attributes, $tahun) {
         if (Yii::$app->request->getIsPost()) {
-            //Wajib dipilih
-            $attr = explode(",", $attributes);
-            $thn = explode(",", $tahun);
+            $kdkategori1 = array_filter(explode(",", str_replace("null", "", $kdkategori)));
+            $kdkbli1 = array_filter(explode(",", str_replace("null", "", $kdkbli)));
+            $kdsu1 = array_filter(explode(",", str_replace("null", "", $kdsu)));
+            $kdkondisi1 = array_filter(explode(",", str_replace("null", "", $kdkondisi)));
+            $kdinstitusi1 = array_filter(explode(",", str_replace("null", "", $kdinstitusi)));
+            $kdkepemilikan1 = array_filter(explode(",", str_replace("null", "", $kdkepemilikan)));
+            $kdjaringanusaha1 = array_filter(explode(",", str_replace("null", "", $kdjaringanusaha)));
+            $attr = array_filter(explode(",", str_replace("null", "", $attributes)));
+            $thn = array_filter(explode(",", str_replace("null", "", $tahun)));
+            $kdprop1 = array_filter(explode(",", str_replace("null", "", $kdprop)));
+            $kdkab1 = array_filter(explode(",", str_replace("null", "", $kdkab)));
+            $kdkec1 = array_filter(explode(",", str_replace("null", "", $kdkec)));
+            $kddesa1 = array_filter(explode(",", str_replace("null", "", $kddesa)));
+
             if (sizeof($attr) > 1) {
-                echo "<li>Attributes</li>";
+                echo "<li value='Attributes'>Attributes</li>";
             }
             if (sizeof($thn) > 1) {
-                echo "<li>Tahun</li>";
+                echo "<li value='Tahun'>Tahun</li>";
+            }
+            if (sizeof($kdprop1) == 0) {
+                echo "<li value='Provinsi'>Provinsi</li>";
+            } elseif (sizeof($kdkab1) == 0) {
+                echo "<li value='Kabupaten'>Kabupaten</li>";
+            } elseif (sizeof($kdkec1) == 0) {
+                echo "<li value='Kecamatan'>Kecamatan</li>";
+            } elseif (sizeof($kddesa1) == 0) {
+                echo "<li value='Desa'>Desa</li>";
+            }
+            if (sizeof($kdkategori1) > 1) {
+                echo "<li value='Kategori'>Kategori</li>";
+            }
+            if (sizeof($kdsu1) > 1) {
+                echo "<li value='Unit Statistik'>Unit Statistik</li>";
+            }
+            if (sizeof($kdkbli1) > 1) {
+                echo "<li value='Kbli'>Kbli</li>";
+            }
+            if (sizeof($kdkondisi1) > 1) {
+                echo "<li value='Status Perusahaan'>Status Perusahaan</li>";
+            }
+            if (sizeof($kdinstitusi1) > 1) {
+                echo "<li value='Sektor Institusi'>Sektor Institusi</li>";
+            }
+            if (sizeof($kdkepemilikan1) > 1) {
+                echo "<li value='Kepemilikan'>Kepemilikan</li>";
+            }
+            if (sizeof($kdjaringanusaha1) > 1) {
+                echo "<li value='Jaringan Usaha'>Jaringan Usaha</li>";
             }
         } else {
             echo "Invalid request.";
         }
     }
 
-    public function actionGetVariablelist($kdprop) {
-        $variableList = array(
-            "kdkbli" => "KBLI",
-            "unitstatistik" => "Unit Statistik",
-            "statusperusahaan" => "Status Perusahaan",
-            "kdkategori" => "Kategori",
-            "institusi" => "Sektor Institusi",
-            "kepemilikan" => "Kepemilikan",
-            "jaringanusaha" => "Jaringan Usaha",
-            "lokasi" => "Lokasi",
-            "tahun" => "Tahun",
-            "atribut" => "Atribut",
-        );
+    public function actionGetKbli($kdkategori) {
         if (Yii::$app->request->getIsPost()) {
-            foreach ($variableList as $key => $value) {
-                echo "<li value='" . $key . "'>" . $value . "</li>";
-            }
-            if ($kdprop == "null" || $kdprop == "") {
-                echo "<li>Propinsi</li>";
-            }
-        } else {
-            echo "Invalid request.";
-        }
-    }
+            $kdkat = array_filter(explode(",", str_replace("null", "", $kdkategori)));
+            foreach ($kdkat as $value) {
+                $kbli = Kbli::find()
+                        ->where(['kdkategori' => $kdkat])
+                        ->andWhere(['tahun' => '2015'])
+                        ->all();
+                $countKbli = Kbli::find()->where(['kdkategori' => $kdkat])
+                        ->andWhere(['tahun' => '2015'])
+                        ->all();
+                if ($countKbli > 0) {
+                    echo "<optgroup label='Kategori " . $value . "'>";
+                    foreach ($kbli as $kbli) {
 
-    public function actionGetLocationvariables($kdprop, $kdkab, $kdkec, $kddesa) {
-        if (Yii::$app->request->getIsPost()) {
-            echo "<li>Prop:" . $kdprop . "</li>";
-            echo "<li>Kab:" . $kdkab . "</li>";
-            echo "<li>Kec:" . $kdkec . "</li>";
-            echo "<li>Des:" . $kddesa . "</li>";
-//           if ($kdprop <> null && $kdprop <> "") {//Jika propinsi ada yang dipilih,
-//                if ($kdkab == null || $kdkab == "") {
-//                    echo "<li>Kabupaten</li>";
-//                } elseif ($kdkec == null || $kdkec == "") {
-//                    echo "<li>Kecamatan</li>";
-//                } elseif ($kddesa == null || $kddesa == "") {
-//                    echo "<li>Desa</li>";
-//                }
-//            }
+                        echo "<option value='" . $kbli->kdkbli . "'>" . $kbli->nmkbli . "</option>";
+                    }
+                    echo "</optgroup>";
+                } else {
+                    echo"<option></option>";
+                }
+            }
         } else {
             echo "Invalid request.";
         }
@@ -246,70 +268,27 @@ class GenerateTableController extends Controller {
     }
 
     public function actionGenerateCustomTable() {
-        $model = new GeneratorTable();
+        $model = new GeneratorTableForm();
+        if ($model->load(Yii::$app->request->post())) {
+            $tabel = $model->generateCustom();
+            //print_r($tabel);
+//            echo $tabel;
+           \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+//            return $this->render('view', [
+//                        'data' => $tabel,
+//            ]);
+            return $tabel   ;         
+        } else {
+            return $this->render('_formCustom', ['model' => $model]);
+        }
+    }
 
-        return $this->render('_formCustom', [
+    public function actionGenerateGivenTable() {
+        //$model = new GeneratorTable();
+        //$model = new \frontend\models\HistoryTabel();
+        return $this->render('givenTable', [
                     'model' => $model,
                         //  'form'=>$form,
         ]);
     }
-
-    public function actionGetTableColumn($attributes, $tahun, $kdprop, $kdkab, $kdkec, $kddesa) {
-        $variableList = array(
-            "kdkbli" => "KBLI",
-            "unitstatistik" => "Unit Statistik",
-            "statusperusahaan" => "Status Perusahaan",
-            "kdkategori" => "Kategori",
-            "institusi" => "Sektor Institusi",
-            "kepemilikan" => "Kepemilikan",
-            "jaringanusaha" => "Jaringan Usaha",
-//            "tahun" => "tahun",
-//            "kddesa" => "Desa",
-//            "kdkec" => "Kecamatan",
-//            "kdkab" => "Kabupaten",
-//            "kdprop" => "Propinsi",
-////            Attributes:
-//            "jumlahmasuk" => "Jumlah Masuk",
-//            "jumlahkeluar" => "Jumlah Keluar",
-//            "jumlahunit0" => "Jumlah Awal Tahun",
-//            "beroperasi" => "Jumlah Aktif Beroperasi",
-//            "jumlahunit1" => "Jumlah Akhir Tahun",
-//            "perubahan" => "Perubahan",
-//            "survived1" => "Survived Tahun I",
-//            "survivalrate1" => "Survival Rate Tahun I",
-//            "survived2" => "Survived Tahun II",
-//            "survivalrate2" => "Survival Rate Tahun II",
-//            "survived3" => "Survived Tahun III",
-//            "survivalrate3" => "Survival Rate Tahun III",
-        );
-
-        if (Yii::$app->request->getIsPost()) {
-            //Wajib dipilih
-            if (sizeof($tahun) > 1) {
-                echo "<li>Tahun</li>";
-            }
-            if (sizeof($attributes) > 1) {
-                echo "<li>Attributes</li>";
-            }
-            if ($kdprop <> null && $kdprop <> "") {//Jika propinsi ada yang dipilih,
-                if ($kdkab == null || $kdkab == "") {
-                    echo "<li>Kabupaten</li>";
-                } elseif ($kdkec == null || $kdkec == "") {
-                    echo "<li>Kecamatan</li>";
-                } elseif ($kddesa == null || $kddesa == "") {
-                    echo "<li>Desa</li>";
-                }
-            }
-            //Optional
-            foreach ($attributes as $value) {
-                echo "<li>" . $variableList[$value] . "</li>";
-            }
-            if ($kdprop == null || $kdprop == "") {
-                echo "<li>Propinsi</li>";
-            }
-        } else {
-            echo "Invalid request.";
-        }
-    }
-
 }

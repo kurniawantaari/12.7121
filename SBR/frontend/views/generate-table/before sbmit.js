@@ -1,4 +1,4 @@
-    $("form#{$model->formName()}").on("beforeSubmit", function(e){
+    $("form#table-generator-form").on("beforeSubmit", function(e){
     var \$form = $(this);
             $.post(
                     \$form.attr("action"),
@@ -6,12 +6,13 @@
                     )
             .done(function(result){
             if (result.message == "Success"){
-            $(document).find("#secondmodal").modal("hide");
-                    $.pjax.reload({container:"#commodity-grid"});
+            $("#message").html(result.message);
+                    //   $(document).find("#secondmodal").modal("hide");
+                    //            $.pjax.reload({container:"#commodity-grid"});
             } else
             {
-            $(\$form).trigger("reset");
-                    $("#message").html(result.message);
+    //  $(\$form).trigger("reset");
+            //
             }
             }).fail(function(){
     console.log("server error");

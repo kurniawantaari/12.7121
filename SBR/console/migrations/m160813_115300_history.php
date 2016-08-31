@@ -71,9 +71,10 @@ class m160813_115300_history extends Migration {
 
         $this->createTable('{{%history_tabel}}', [
             'idtabel' => $this->primaryKey(),
+            'nmtabel' => $this->string(),
             'jenis' => $this->char(2),
-            'jumlah_hits' => $this->integer()->notNull(),
-            'flag' => $this->boolean()->notNull()->defaultValue(0), //false is nggak masuk ke suggestion
+             'variabelvertikal' => $this->string(),
+            'variabelhorizontal' => $this->string(),
                 ], $tableOptions);
 
         $this->addForeignKey('history_kdkbli_pk', '{{%history_kdkbli}}', 'idtabel', 'history_tabel', 'idtabel', 'CASCADE', 'CASCADE');
@@ -89,7 +90,7 @@ class m160813_115300_history extends Migration {
     }
 
     public function down() {
-        $this->dropTable('{{%history_tabel}}');
+        
         $this->dropTable('{{%history_kdkbli}}');
         $this->dropTable('{{%history_statusperusahaan}}');
         $this->dropTable('{{%history_unitstatistik}}');
@@ -100,6 +101,7 @@ class m160813_115300_history extends Migration {
         $this->dropTable('{{%history_jaringanusaha}}');
         $this->dropTable('{{%history_lokasi}}');
         $this->dropTable('{{%history_attributes}}');
+        $this->dropTable('{{%history_tabel}}');
     }
 
 }

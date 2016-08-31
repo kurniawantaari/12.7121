@@ -66,6 +66,7 @@ AppAsset::register($this);
                     ],
                 ],
             ];
+            $menuItems[]=['label' => 'About', 'url' => ['/site/about']];
             if (Yii::$app->user->isGuest) {
 
                 $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
@@ -80,7 +81,7 @@ AppAsset::register($this);
                         . Html::endForm()
                         . '</li>';
 
-                $menuItems[]=['label' => 'About', 'url' => ['/site/about']];
+                
                 $menuItems[] = ['label' => Yii::$app->user->identity->username,
                     'items' => $submenuUser];
 

@@ -75,8 +75,8 @@ use yii\widgets\ActiveForm;
                         <?php $formStatus = ActiveForm::begin(); ?>  
                         <?= $formStatus->field($model, 'status')->dropDownList([0 => 'Deleted', 5 => 'Nonactive', 10 => 'Active'], ['disabled' => !\Yii::$app->user->can('manageUsers')]) ?>
                         <?php if((\Yii::$app->user->can('manageUsers'))) { 
-                             Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'disabled' => !\Yii::$app->user->can('manageUsers')]);
-     Html::resetButton('Cancel', ['class' => 'btn btn-default', 'disabled' => !\Yii::$app->user->can('manageUsers')]);
+          echo                   Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'disabled' => !\Yii::$app->user->can('manageUsers')]);
+     echo Html::resetButton('Cancel', ['class' => 'btn btn-default', 'disabled' => !\Yii::$app->user->can('manageUsers')]);
                         }?>
                         
     <?php ActiveForm::end(); ?>

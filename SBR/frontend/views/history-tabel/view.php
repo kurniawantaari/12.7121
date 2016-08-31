@@ -29,7 +29,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'idtabel',
+            'nmtabel',
             'jenis',
+            'variabelvertikal',
+            'variabelhorizontal',
             'jumlah_hits',
             'flag',
         ],

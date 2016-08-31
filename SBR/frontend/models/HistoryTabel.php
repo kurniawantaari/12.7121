@@ -8,9 +8,10 @@ use Yii;
  * This is the model class for table "history_tabel".
  *
  * @property integer $idtabel
+ * @property string $nmtabel
  * @property string $jenis
- * @property integer $jumlah_hits
- * @property integer $flag
+ * @property string $variabelvertikal
+ * @property string $variabelhorizontal
  *
  * @property HistoryAttributes[] $historyAttributes
  * @property HistoryInstitusi[] $historyInstitusis
@@ -39,9 +40,7 @@ class HistoryTabel extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['jenis'], 'string'],
-            [['jumlah_hits'], 'required'],
-            [['jumlah_hits', 'flag'], 'integer'],
+            [['nmtabel', 'jenis', 'variabelvertikal', 'variabelhorizontal'], 'string'],
         ];
     }
 
@@ -52,10 +51,11 @@ class HistoryTabel extends \yii\db\ActiveRecord
     {
         return [
             'idtabel' => 'Idtabel',
+            'nmtabel' => 'Nmtabel',
             'jenis' => 'Jenis',
-            'jumlah_hits' => 'Jumlah Hits',
-            'flag' => 'Flag',
-        ];
+            'variabelvertikal' => 'Variabelvertikal',
+            'variabelhorizontal' => 'Variabelhorizontal',
+                    ];
     }
 
     /**
@@ -136,5 +136,8 @@ class HistoryTabel extends \yii\db\ActiveRecord
     public function getHistoryUnitstatistiks()
     {
         return $this->hasMany(HistoryUnitstatistik::className(), ['idtabel' => 'idtabel']);
+    }
+    public function getTabelById($id){
+        return static::findOne(['id' => $id]);
     }
 }
