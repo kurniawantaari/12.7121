@@ -199,6 +199,9 @@ class GeneratorTableForm extends Model {
                 case 'survivalrate2':
                     $historyAttribute->survivalrate2 = 1;
                     break;
+                case 'jumlahunit':
+                    $historyAttribute->jumlahunit = 1;
+                    break;
             }
             $historyAttribute->save();
         }
@@ -449,148 +452,90 @@ class GeneratorTableForm extends Model {
         } else {
             $kdjaringanusaha1 = array_filter(str_replace("null", "", $this->jaringanusaha));
         }
-        $resulttable = "<div class='table-responsive'><table class='table table-striped table-hover'><tr>";
-        $vertikal = array();
-        $rlevel = array();
 
-        $isivertikal = array();
+        $vertikal = array();
         foreach ($vvertikal1 as $value) {
             switch ($value) {
                 case "Desa":
                     array_push($vertikal, "kddesa");
-                    array_push($rlevel, count($kddesa1));
-                    array_push($isivertikal, $kddesa1);
                     break;
                 case "Kecamatan":
                     array_push($vertikal, "kdkec");
-                    array_push($rlevel, count($kdkec1));
-                    array_push($isivertikal, $kdkec1);
                     break;
                 case "Kabupaten":
                     array_push($vertikal, "kdkab");
-                    array_push($rlevel, count($kdkab1));
-                    array_push($isivertikal, $kdkab1);
                     break;
                 case "Provinsi":
                     array_push($vertikal, "kdprop");
-                    array_push($rlevel, count($kdprop1));
-                    array_push($isivertikal, $kdprop1);
                     break;
                 case "Kategori":
                     array_push($vertikal, "kdkategori");
-                    array_push($rlevel, count($kdkategori1));
-                    array_push($isivertikal, $kdkategori1);
                     break;
                 case "Kbli":
                     array_push($vertikal, "kdkbli");
-                    array_push($rlevel, count($kdkbli1));
-                    array_push($isivertikal, $kdkbli1);
                     break;
                 case "Status Perusahaan":
                     array_push($vertikal, "statusperusahaan");
-                    array_push($rlevel, count($kdkondisi1));
-                    array_push($isivertikal, $kdkondisi1);
                     break;
                 case "Unit Statistik":
                     array_push($vertikal, "unitstatistik");
-                    array_push($rlevel, count($kdsu1));
-                    array_push($isivertikal, $kdsu1);
                     break;
                 case "Sektor Institusi":
                     array_push($vertikal, "institusi");
-                    array_push($rlevel, count($kdinstitusi1));
-                    array_push($isivertikal, $kdinstitusi1);
                     break;
                 case "Kepemilikan":
                     array_push($vertikal, "kepemilikan");
-                    array_push($rlevel, count($kdkepemilikan1));
-                    array_push($isivertikal, $kdkepemilikan1);
                     break;
                 case "Jaringan Usaha":
                     array_push($vertikal, "jaringanusaha");
-                    array_push($rlevel, count($kdjaringanusaha1));
-                    array_push($isivertikal, $kdjaringanusaha1);
                     break;
                 case "Tahun":
                     array_push($vertikal, "tahun");
-                    array_push($rlevel, count($thn));
-                    array_push($isivertikal, $thn);
                     break;
             }
-
-//header tabel
-            $resulttable = $resulttable . "<th>" . $value . "</th>";
         }
         $horisontal = array();
-        $clevel = array();
-
-        $isiheader = array();
         foreach ($vhorizontal1 as $value) {
             switch ($value) {
                 case "Desa":
                     array_push($horisontal, "kddesa");
-                    array_push($clevel, count($kddesa1));
-                    array_push($isiheader, $kddesa1);
                     break;
                 case "Kecamatan":
                     array_push($horisontal, "kdkec");
-                    array_push($clevel, count($kdkec1));
-                    array_push($isiheader, $kdkec1);
                     break;
                 case "Kabupaten":
                     array_push($horisontal, "kdkab");
-                    array_push($clevel, count($kdkab1));
-                    array_push($isiheader, $kdkab1);
                     break;
                 case "Provinsi":
                     array_push($horisontal, "kdprop");
-                    array_push($clevel, count($kdprop1));
-                    array_push($isiheader, $kdprop1);
                     break;
                 case "Kategori":
                     array_push($horisontal, "kdkategori");
-                    array_push($clevel, count($kdkategori1));
-                    array_push($isiheader, $kdkategori1);
                     break;
                 case "Kbli":
                     array_push($horisontal, "kdkbli");
-                    array_push($clevel, count($kdkbli1));
-                    array_push($isiheader, $kdkbli1);
                     break;
                 case "Status Perusahaan":
                     array_push($horisontal, "statusperusahaan");
-                    array_push($clevel, count($kdkondisi1));
-                    array_push($isiheader, $kdkondisi1);
                     break;
                 case "Unit Statistik":
                     array_push($horisontal, "unitstatistik");
-                    array_push($clevel, count($kdsu1));
-                    array_push($isiheader, $kdsu1);
+
                     break;
                 case "Sektor Institusi":
                     array_push($horisontal, "institusi");
-                    array_push($clevel, count($kdinstitusi1));
-                    array_push($isiheader, $kdinstitusi1);
+
                     break;
                 case "Kepemilikan":
                     array_push($horisontal, "kepemilikan");
-                    array_push($clevel, count($kdkepemilikan1));
-                    array_push($isiheader, $kdkepemilikan1);
                     break;
                 case "Jaringan Usaha":
                     array_push($horisontal, "jaringanusaha");
-                    array_push($clevel, count($kdjaringanusaha1));
-                    array_push($isiheader, $kdjaringanusaha1);
                     break;
                 case "Tahun":
                     array_push($horisontal, "tahun");
-                    array_push($clevel, count($thn));
-                    array_push($isiheader, $thn);
                     break;
             }
-
-//header tabel
-            $resulttable = $resulttable . "<th>" . $value . "</th>";
         }
         $tabelatribut = array();
         foreach ($attr as $value) {
@@ -617,7 +562,7 @@ class GeneratorTableForm extends Model {
                     $tabelatribut[$value] = "Survival_Rate_Tahun _III";
                     break;
                 case "jumlahmasuk":
-                    $tabelatribut[value] = "Jumlah_Masuk";
+                    $tabelatribut[$value] = "Jumlah_Masuk";
                     break;
                 case "jumlahkeluar":
                     $tabelatribut[$value] = "Jumlah_Keluar";
@@ -647,17 +592,12 @@ class GeneratorTableForm extends Model {
             }
             $field = $field . implode(",", $horisontal);
         }
-//$field1 = $field . $tabelatribut;
         foreach ($tabelatribut as $key => $value) {
             $field1 = $field
                     . ", sum(" . $key
                     . ") as " . $value;
-//header tabel
-            $resulttable = $resulttable . "<th>" . $value . "</th>";
         }
-        $resulttable = $resulttable . "</tr>"; //end header
-//$tsql = new Query;
-// compose the query
+
         $kondisi = "";
         if (count($kdsu1) != 0) {
             $kondisi = $kondisi . "') and unitstatistik in ('" . implode("','", $kdsu1);
@@ -693,122 +633,24 @@ class GeneratorTableForm extends Model {
             $kondisi = $kondisi . "') and jaringanusaha in ('" . implode("','", $kdjaringanusaha1);
         }
         $connection = Yii::$app->getDb();
-        $tsql = "SELECT " . $field1
-                . " FROM " . $tabel
-                . " WHERE tahun in ('" . implode("','", $thn)
-                . $kondisi
-                . "')"
-                . " GROUP BY " . $field
-                . " ORDER BY " . $field . ";";
+        //T-SQL pivotting table
+        $tsql="";
+//        $tsql = "SELECT " . $field1
+//                . " FROM " . $tabel
+//                . " WHERE tahun in ('" . implode("','", $thn)
+//                . $kondisi
+//                . "')"
+//                . " GROUP BY " . $field
+//                . " ORDER BY " . $field . ";";
         $command = $connection->createCommand($tsql);
+        
+        
 // returns all rows of the query result
         $result = $command->queryAll();
-
-//mengisi tabel
-        $nrow = count($result);
-        for ($row = 0; $row < $nrow; $row++) {
-            $resulttable = $resulttable . "<tr>";
-            foreach ($result[$row] as $key => $value) {
-                $resulttable = $resulttable . "<td>" . $value . "</td>";
-            }
-            $resulttable = $resulttable . "</tr>";
-        }
-        $resulttable = $resulttable . "</table></div>";
-//cek query
-        $resulttable = $resulttable . "<div>" . $command->sql . "</div>";
-        //tabel baru
-        $isibaru = "<table border='1'>";
-
-        $cspan = array();
-        $jmlkolom = array();
-        $horisontaldeep = sizeof($horisontal);
-
-//hitung jumlah kolom yang perlu di-span. jumlah kolom= jumlah kolom*jmlah kolom sebelumnya
-        array_push($jmlkolom, 1);
-        for ($j = 0; $j < $horisontaldeep; $j++) {
-            array_push($cspan, array_product(array_slice($clevel, $j + 1)));
-            array_push($jmlkolom, $jmlkolom[$j] * $clevel[$j]);
-        }
-        array_push($cspan, 1);
-//bikin row header      
-        //header diulang sebanyak level
-        foreach ($isiheader as $key => $value) {//jumlah row
-            $isibaru = $isibaru . "<tr>";
-            if ($key > 0) {
-                $i = 0;
-                while ($i < $jmlkolom[($key)]) {
-                    foreach ($value as $values) {//banyaknya isian kolom di baris tsb
-                        $isibaru = $isibaru . "<th colspan='" . $cspan[$key] . "'>" . $values . "</th>";
-                    }$i++;
-                }
-            } else {
-                foreach ($vertikal as $nilai) {
-                    $isibaru = $isibaru . "<th rowspan='" . $horisontaldeep . "'>" . $nilai . "</th>";
-                }
-                foreach ($value as $values) {//banyaknya isian kolom di baris tsb
-                    $isibaru = $isibaru . "<th colspan='" . $cspan[$key] . "'>" . $values . "</th>";
-                }
-            }
-            $isibaru = $isibaru . "</tr>";
-        }
-        //hitung jumlah baris yang perlu di-span. jumlah baris= jumlah baris*jmlah baris sebelumnya
-
-        $rspan = array();
-        $jmlbaris = array();
-
-        $vertikaldeep = sizeof($vertikal);
-        array_push($jmlbaris, 1);
-        for ($j = 0; $j < $vertikaldeep; $j++) {
-            array_push($rspan, array_product(array_slice($rlevel, $j + 1)));
-            array_push($jmlbaris, $jmlbaris[$j] * $rlevel[$j]);
-        }
-        array_push($rspan, 1);
-        //isi tabel
-        $baris = count($result);
-        for ($row = 0; $row < $baris; $row++) {
-            $isibaru = $isibaru . "<tr>";
-//            $isibaru = $isibaru . "<td>" . $result[$row]['kdprop'] . "</td>";
-//            $isibaru = $isibaru . "<td>" . $result[$row]['unitstatistik'] . "</td>";
-//            foreach ($result[$row] as $value) {
-//                if ($value == "2") {
-//                    if ($value == "S11") {
-//                        $isibaru = $isibaru . "<td>" . $result[$row]['Jumlah_Akhir_Tahun'] . "</td>";
-//                    } elseif ($value == "S12") {
-//                        $isibaru = $isibaru . "<td></td>";
-//                        $isibaru = $isibaru . "<td>" . $result[$row]['Jumlah_Akhir_Tahun'] . "</td>";
-//                    } else {
-//                        $isibaru = $isibaru . "<td></td>";
-//                        $isibaru = $isibaru . "<td></td>";
-//                    }
-//                } if ($value == "4") {
-//                    if ($value == "S11") {
-//                        $isibaru = $isibaru . "<td>" . $result[$row]['Jumlah_Akhir_Tahun'] . "</td>";
-//                    } elseif ($value == "S12") {
-//                        $isibaru = $isibaru . "<td></td>";
-//                        $isibaru = $isibaru . "<td>" . $result[$row]['Jumlah_Akhir_Tahun'] . "</td>";
-//                    } else {
-//                        $isibaru = $isibaru . "<td></td>";
-//                        $isibaru = $isibaru . "<td></td>";
-//                    }
-//                } if ($value == "5") {
-//                    if ($value == "S11") {
-//                        $isibaru = $isibaru . "<td>" . $result[$row]['Jumlah_Akhir_Tahun'] . "</td>";
-//                    } elseif ($value == "S12") {
-//                        $isibaru = $isibaru . "<td></td>";
-//                        $isibaru = $isibaru . "<td>" . $result[$row]['Jumlah_Akhir_Tahun'] . "</td>";
-//                    } else {
-//                        $isibaru = $isibaru . "<td></td>";
-//                        $isibaru = $isibaru . "<td></td>";
-//                    }
-//                }
-//            } 
-            $isibaru = $isibaru . "</tr>";
-        }
-        $isibaru = $isibaru . "</table>";
-        $resulttable = $resulttable . "<div>" . $isibaru . "</div>";
 //cek array
-return $result;
+        return $result;
 //saveTable($vvertikal1,$vhorizontal1,$kdprop1,$kdkab1,$kdkec1,$kddesa1,$attr,$namatabel,$thn,$kdkategori1,$kdkondisi1,$kdkbli1,$kdsu1,$kdinstitusi1,$kdkepemilikan1,$kdjaringanusaha1);
-//        return $resulttable;
+        //return $resulttable;
     }
+
 }

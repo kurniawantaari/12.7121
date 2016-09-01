@@ -271,13 +271,11 @@ class GenerateTableController extends Controller {
         $model = new GeneratorTableForm();
         if ($model->load(Yii::$app->request->post())) {
             $tabel = $model->generateCustom();
-            //print_r($tabel);
-//            echo $tabel;
-           \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-//            return $this->render('view', [
-//                        'data' => $tabel,
-//            ]);
-            return $tabel   ;         
+            print_r($tabel);
+//echo $tabel;
+            //\Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            //return $this->render('view',               ['tabel'=>$tabel]            );
+            //return $tabel   ;         
         } else {
             return $this->render('_formCustom', ['model' => $model]);
         }
@@ -291,4 +289,5 @@ class GenerateTableController extends Controller {
                         //  'form'=>$form,
         ]);
     }
+
 }

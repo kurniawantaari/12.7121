@@ -20,6 +20,7 @@ use Yii;
  * @property integer $survivalrate1
  * @property integer $survivalrate2
  * @property integer $survivalrate3
+ * @property integer $jumlahunit
  *
  * @property HistoryTabel $idtabel0
  */
@@ -39,7 +40,7 @@ class HistoryAttributes extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['idtabel', 'jumlahmasuk', 'jumlahkeluar', 'jumlahunit0', 'beroperasi', 'jumlahunit1', 'perubahan', 'survived1', 'survived2', 'survived3', 'survivalrate1', 'survivalrate2', 'survivalrate3'], 'integer'],
+            [['idtabel', 'jumlahmasuk', 'jumlahkeluar', 'jumlahunit0', 'beroperasi', 'jumlahunit1', 'perubahan', 'survived1', 'survived2', 'survived3', 'survivalrate1', 'survivalrate2', 'survivalrate3', 'jumlahunit'], 'integer'],
             [['idtabel'], 'exist', 'skipOnError' => true, 'targetClass' => HistoryTabel::className(), 'targetAttribute' => ['idtabel' => 'idtabel']],
         ];
     }
@@ -63,6 +64,7 @@ class HistoryAttributes extends \yii\db\ActiveRecord
             'survivalrate1' => 'Survivalrate1',
             'survivalrate2' => 'Survivalrate2',
             'survivalrate3' => 'Survivalrate3',
+            'jumlahunit' => 'Jumlahunit',
         ];
     }
 

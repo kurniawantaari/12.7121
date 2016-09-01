@@ -67,6 +67,7 @@ class m160813_115300_history extends Migration {
             'survivalrate1' => $this->boolean(),
             'survivalrate2' => $this->boolean(),
             'survivalrate3' => $this->boolean(),
+            'jumlahunit'=>$this->boolean(),
                 ], $tableOptions);
 
         $this->createTable('{{%history_tabel}}', [
