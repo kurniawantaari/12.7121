@@ -741,11 +741,11 @@ class GeneratorTableForm extends Model {
             }
         } else {
             //T-SQL pivotting table
-            $tsql = "SELECT *" . " FROM (" . "SELECT " . $field;
-                     if ($field == "") {
-                $tsql.="p.[tahun] AS [Tahun]";
+            $tsql = "SELECT *" . " FROM (" . "SELECT " . $field.",";
+                     if ($field == ""||$pivotfor=="") {
+                $tsql.="p.[tahun] AS [Tahun],";
             }
-                    $tsql.= ",".implode(",", $attrnama) . " FROM [" . $tabel . "] p "
+                    $tsql.= implode(",", $attrnama) . " FROM [" . $tabel . "] p "
                     . $join . " WHERE p.[tahun] in ('" . implode("','", $thn)
                     . $kondisi . "')" . ") AS [tabelsumber] "
                     . "PIVOT (" . $pivotsum . "FOR ";
