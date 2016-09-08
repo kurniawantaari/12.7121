@@ -537,6 +537,7 @@ class GeneratorTableForm extends Model {
                     if (count($attr) > 1) {
                         array_push($group, "p.[tahun]");
                     } break;
+                    
             }
         }
 
@@ -736,15 +737,22 @@ class GeneratorTableForm extends Model {
                     . $kondisi . "')";
             if ($group <> null) {
                 $tsql.= " GROUP BY " . implode(",", $group);
+                $tsql.= " ORDER BY " . implode(",", $group);
             }
         } else {
             //T-SQL pivotting table
-            $tsql = "SELECT *" . " FROM (" . "SELECT " . $field
-                    . "," . implode(",", $attrnama) . " FROM [" . $tabel . "] p "
+            $tsql = "SELECT *" . " FROM (" . "SELECT " . $field;
+                     if ($field == "") {
+                $tsql.="p.[tahun] AS [Tahun]";
+            }
+                    $tsql.= ",".implode(",", $attrnama) . " FROM [" . $tabel . "] p "
                     . $join . " WHERE p.[tahun] in ('" . implode("','", $thn)
                     . $kondisi . "')" . ") AS [tabelsumber] "
-                    . "PIVOT (" . $pivotsum . "FOR "
-                    . $pivotfor . ") AS [tabelbaru]";
+                    . "PIVOT (" . $pivotsum . "FOR ";
+                    if($pivotfor<>""){$tsql.=$pivotfor;}else{
+                       $tsql .= " [Tahun] IN ([" . implode("],[", $thn) . "]) ";
+                    }
+                    $tsql.= ") AS [tabelbaru]";
         }
        
         $this->tsql = $tsql;

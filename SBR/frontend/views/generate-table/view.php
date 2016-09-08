@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
 <?php  
 //testing only
-//print_r($tsql);
+print_r($tsql);
 $this->registerJs("
        $('table').dragtable();
 ");
