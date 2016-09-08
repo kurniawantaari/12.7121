@@ -2,7 +2,6 @@
 
 namespace frontend\models;
 
-use yii;
 use yii\base\Model;
 use frontend\models\HistoryTabel;
 use frontend\models\HistoryAttributes;
@@ -15,7 +14,7 @@ use frontend\models\HistoryLokasi;
 use frontend\models\HistoryStatusperusahaan;
 use frontend\models\HistoryTahun;
 use frontend\models\HistoryUnitstatistik;
-use yii\db\Query;
+use yii\data\SqlDataProvider;
 
 /**
  * Generator Table Form is the model behind the generator table.
@@ -38,6 +37,7 @@ class GeneratorTableForm extends Model {
     public $institusi;
     public $kepemilikan;
     public $jaringanusaha;
+    public $namatabel;
 
     /**
      * @inheritdoc
@@ -50,8 +50,801 @@ class GeneratorTableForm extends Model {
         ];
     }
 
-    public function saveTable(array $vvertikal1, array $vhorizontal1, array $kdprop1, array $kdkab1, array $kdkec1, array $kddesa1, array $attr, string $namatabel, array $thn, array $kdkategori1, array $kdkondisi1, array $kdkbli1, array $kdsu1, array $kdinstitusi1, array $kdkepemilikan1, array $kdjaringanusaha1) {
-//menyimpan tabel
+
+    public function generateCustom() {
+//atribut
+        if (is_string($this->attributes)) {
+            $attr = array_filter(explode(",", str_replace("null", "", $this->attributes)));
+        } else {
+            $attr = array_filter(str_replace("null", "", $this->attributes));
+        }
+//mengatur default subjek dan atribut jika atribut kosong
+        if (count($attr) == 0) {
+            if ($this->subject == "su" || $this->subject == "se") {
+                array_push($attr, "survived1");
+            } else {
+                array_push($attr, "jumlahunit1");
+                $this->subject = "ju";
+            }
+        }
+//tahun
+        if (is_string($this->years)) {
+            $thn = array_filter(explode(",", str_replace("null", "", $this->years)));
+        } else {
+            $thn = array_filter(str_replace("null", "", $this->years));
+        }
+//mengatur default tahun jika tidak ada tahun yang dipilih
+        if (count($thn) == 0) {
+
+            array_push($thn, "2015");
+        }
+        $tabeltahun = array(); //untuk mengatur tahun dalam nama tabel
+        $namatabel = "";
+        if ($this->subject == "se") {
+            if (count($attr) > 1) {
+                $namatabel = "Survival Unit yang Masuk ";
+            }
+            $tabel = "survival_birth";
+
+            foreach ($thn as $value) {
+                $tabeltahun[$value] = ((int) $value - 3) . "-" . $value;
+            }
+        } elseif ($this->subject == "su") {
+            if (count($attr) > 1) {
+                $namatabel = "Survival Unit Usaha ";
+            }
+            $tabel = "survival_unit";
+            foreach ($thn as $value) {
+                $tabeltahun[$value] = ((int) $value - 3) . "-" . $value;
+            }
+        } else {
+            if (count($attr) > 1) {
+                $namatabel = "Jumlah Unit Usaha ";
+            }
+            $tabel = "jumlah_unit";
+            foreach ($thn as $value) {
+                $tabeltahun[$value] = $value;
+            }
+        }
+//variabel vertikal dan horisontal
+        $vvertikal1 = array_filter(explode(",", str_replace("null", "", $this->vvertikal)));
+        $vhorizontal1 = array_filter(explode(",", str_replace("null", "", $this->vhorizontal)));
+//meng-update nama tabel
+        $namatabel = $namatabel . " menurut " . implode(", ", $vvertikal1) . ", " . implode(", ", $vhorizontal1);
+        $lokasi = "";
+//mengatur lokasi
+        $prop1 = str_replace("null", "", $this->kdprop);
+        $kab1 = str_replace("null", "", $this->kdkab);
+        $kec1 = str_replace("null", "", $this->kdkec);
+        $desa1 = str_replace("null", "", $this->kddesa);
+        if (is_string($prop1)) {
+            $kdprop1 = array_filter(explode(",", $prop1));
+        } else {
+            $kdprop1 = array_filter($prop1);
+        }
+        if (is_string($kab1)) {
+            $kdkab1 = array_filter(explode(",", $kab1));
+        } else {
+            $kdkab1 = array_filter($kab1);
+        }
+        if (is_string($kec1)) {
+            $kdkec1 = array_filter(explode(",", $kec1));
+        } else {
+            $kdkec1 = array_filter($kec1);
+        }
+        if (is_string($desa1)) {
+            $kddesa1 = array_filter(explode(",", $desa1));
+        } else {
+            $kddesa1 = array_filter($desa1);
+        }
+
+        if (count($kdprop1) == 0) {
+            $lokasi = "Indonesia";
+        } elseif (count($kdkab1) == 0) {
+            $propinsi = Propinsi::find()->where(['not', ['kdprop' => '95']])->andWhere(['not', ['kdprop' => '00']])
+                            ->andWhere(['kdprop' => $kdprop1[0]])->all();
+            $lokasi = "Provinsi ";
+            foreach ($propinsi as $value) {
+                $lokasi = $lokasi . trim($value->nmprop);
+            }
+        } elseif (count($kdkec1) == 0) {
+            $propinsi = Propinsi::find()->where(['not', ['kdprop' => '95']])->andWhere(['not', ['kdprop' => '00']])
+                            ->andWhere(['kdprop' => $kdprop1[0]])->all();
+            $kabupaten = Kabupaten::find()->where(['kdkab' => $kdkab1[0], 'kdprop' => $kdprop1[0]])->all();
+            $lokasi = "Kabupaten/Kota ";
+            foreach ($kabupaten as $value) {
+                $lokasi = $lokasi . trim($value->nmkab);
+            }
+            $lokasi = $lokasi . " Provinsi ";
+            foreach ($propinsi as $value) {
+                $lokasi = $lokasi . trim($value->nmprop);
+            }
+        } elseif (count($kddesa1) == 0) {
+            $propinsi = Propinsi::find()->where(['not', ['kdprop' => '95']])->andWhere(['not', ['kdprop' => '00']])
+                            ->andWhere(['kdprop' => $kdprop1[0]])->all();
+            $kabupaten = Kabupaten::find()->where(['kdkab' => $kdkab1[0], 'kdprop' => $kdprop1[0]])->all();
+            $kecamatan = Kecamatan::find()->where(['kdkec' => $kdkec1[0], 'kdkab' => $kdkab1[0], 'kdprop' => $kdprop1[0]])->all();
+            $lokasi = "Kecamatan ";
+
+            foreach ($kecamatan as $value) {
+                $lokasi = $lokasi . trim($value->nmkec);
+            }
+            $lokasi = $lokasi . " Kabupaten/Kota ";
+            foreach ($kabupaten as $value) {
+                $lokasi = $lokasi . trim($value->nmkab);
+            }
+            $lokasi = $lokasi . " Provinsi ";
+            foreach ($propinsi as $value) {
+                $lokasi = $lokasi . trim($value->nmprop);
+            }
+        } elseif (count($kddesa1) > 0) {
+            $propinsi = Propinsi::find()->where(['not', ['kdprop' => '95']])->andWhere(['not', ['kdprop' => '00']])
+                            ->andWhere(['kdprop' => $kdprop1[0]])->all();
+            $kabupaten = Kabupaten::find()->where(['kdkab' => $kdkab1[0], 'kdprop' => $kdprop1[0]])->all();
+            $kecamatan = Kecamatan::find()->where(['kdkec' => $kdkec1[0], 'kdkab' => $kdkab1[0], 'kdprop' => $kdprop1[0]])->all();
+            $desa = Desa::find()->where(['kddesa' => $kddesa1[0], 'kdkec' => $kdkec1[0], 'kdkab' => $kdkab1[0], 'kdprop' => $kdprop1[0]])->all();
+
+            if (count($kddesa1) == 1) {
+                $lokasi = "Desa ";
+                foreach ($desa as $value) {
+                    $lokasi = $lokasi . trim($value->nmdesa);
+                }
+            }
+            $lokasi = $lokasi . " Kecamatan ";
+            foreach ($kecamatan as $value) {
+                $lokasi = $lokasi . trim($value->nmkec);
+            }
+            $lokasi = $lokasi . " Kabupaten/Kota ";
+            foreach ($kabupaten as $value) {
+                $lokasi = $lokasi . trim($value->nmkab);
+            }
+            $lokasi = $lokasi . " Provinsi ";
+            foreach ($propinsi as $value) {
+                $lokasi = $lokasi . trim($value->nmprop);
+            }
+        }
+        if (is_string($this->kdkategori)) {
+            $kdkategori1 = array_filter(explode(",", str_replace("null", "", $this->kdkategori)));
+        } else {
+            $kdkategori1 = array_filter(str_replace("null", "", $this->kdkategori));
+        }
+
+        if (is_string($this->kdkbli)) {
+            $kdkbli1 = array_filter(explode(",", str_replace("null", "", $this->kdkbli)));
+        } else {
+            $kdkbli1 = array_filter(str_replace("null", "", $this->kdkbli));
+        }
+
+        if (is_string($this->unitstatistik)) {
+            $kdsu1 = array_filter(explode(",", str_replace("null", "", $this->unitstatistik)));
+        } else {
+            $kdsu1 = array_filter(str_replace("null", "", $this->unitstatistik));
+        }
+
+        if (is_string($this->statusperusahaan)) {
+            $kdkondisi1 = array_filter(explode(",", str_replace("null", "", $this->statusperusahaan)));
+        } else {
+            $kdkondisi1 = array_filter(str_replace("null", "", $this->statusperusahaan));
+        }
+
+        if (is_string($this->institusi)) {
+            $kdinstitusi1 = array_filter(explode(",", str_replace("null", "", $this->institusi)));
+        } else {
+            $kdinstitusi1 = array_filter(str_replace("null", "", $this->institusi));
+        }
+
+        if (is_string($this->kepemilikan)) {
+            $kdkepemilikan1 = array_filter(explode(",", str_replace("null", "", $this->kepemilikan)));
+        } else {
+            $kdkepemilikan1 = array_filter(str_replace("null", "", $this->kepemilikan));
+        }
+
+        if (is_string($this->jaringanusaha)) {
+            $kdjaringanusaha1 = array_filter(explode(",", str_replace("null", "", $this->jaringanusaha)));
+        } else {
+            $kdjaringanusaha1 = array_filter(str_replace("null", "", $this->jaringanusaha));
+        }
+
+        $vertikal = array();
+        $join = "";
+        $group = array();
+
+        foreach ($vvertikal1 as $value) {
+            switch ($value) {
+                case "Desa":
+                    array_push($vertikal, "desa.[nmdesa] AS [Desa]");
+                    $join.=" JOIN [desa] desa ON p.[kddesa] = desa.[kddesa]";
+                    if (count($attr) > 1) {
+                        array_push($group, "desa.[nmdesa]");
+                    }
+                    break;
+                case "Kecamatan":
+                    array_push($vertikal, "kec.[nmkec] AS [Kecamatan]");
+                    $join.=" JOIN [kecamatan] kec ON kec.[kdkec] = p.[kdkec] ";
+                    if (count($attr) > 1) {
+                        array_push($group, "kec.[nmkec]");
+                    }
+                    break;
+                case "Kabupaten":
+                    array_push($vertikal, "kab.[nmkab] AS [Kabupaten]");
+                    $join.=" JOIN [kabupaten] kab ON kab.[kdkab] = p.[kdkab] ";
+                    if (count($attr) > 1) {
+                        array_push($group, "kab.[nmkab]");
+                    }
+                    break;
+                case "Provinsi":
+                    array_push($vertikal, "prop.[nmprop] AS [Provinsi]");
+                    $join.=" JOIN [propinsi] prop ON prop.[kdprop] = p.[kdprop] ";
+                    if (count($attr) > 1) {
+                        array_push($group, "prop.[nmprop]");
+                    }
+                    break;
+                case "Kategori":
+                    array_push($vertikal, "kat.[nmkategori] AS [Kategori]");
+                    $join.=" JOIN [kategori] kat ON kat.[kdkategori] = p.[kdkategori] ";
+                    if (count($attr) > 1) {
+                        array_push($group, "kat.[nmkategori] ");
+                    }
+                    break;
+                case "Kbli":
+                    array_push($vertikal, "kbli.[nmkbli] AS [KBLI]");
+                    $join.=" JOIN [kbli] kbli ON kbli.[kdkbli] = p.[kdkbli] ";
+                    if (count($attr) > 1) {
+                        array_push($group, "kbli.[nmkbli]");
+                    }
+                    break;
+                case "Status Perusahaan":
+                    array_push($vertikal, "kon.[nmkondisi] AS [Status Perusahaan]");
+                    $join.=" JOIN [statusperusahaan] kon ON kon.[kdkondisi] = p.[statusperusahaan] ";
+                    if (count($attr) > 1) {
+                        array_push($group, "kon.[nmkondisi]");
+                    }
+                    break;
+                case "Unit Statistik":
+                    array_push($vertikal, "su.[nmsu] AS [Unit Statistik]");
+                    $join.=" JOIN [unitstatistik] su ON su.[kdsu] = p.[unitstatistik] ";
+                    if (count($attr) > 1) {
+                        array_push($group, "su.[nmsu]");
+                    }
+                    break;
+                case "Sektor Institusi":
+                    array_push($vertikal, "ins.[nminstitusi] AS [Sektor Institusi]");
+                    $join.=" JOIN [institusi] ins ON ins.[kdinstitusi] = p.[institusi] ";
+                    if (count($attr) > 1) {
+                        array_push($group, "ins.[nminstitusi]");
+                    }
+                    break;
+                case "Kepemilikan":
+                    array_push($vertikal, "kep.[nmkepemilikan] AS [Kepemilikan]");
+                    $join.=" JOIN [kepemilikan] kep ON kep.[kdkepemilikan] = p.[kepemilikan] ";
+                    if (count($attr) > 1) {
+                        array_push($group, "kep.[nmkepemilikan]");
+                    }
+                    break;
+                case "Jaringan Usaha":
+                    array_push($vertikal, "ju.[nmjaringanusaha] AS [Jaringan Usaha]");
+                    $join.=" JOIN [jaringanusaha] ju ON ju.[kdjaringanusaha] = p.[jaringanusaha] ";
+                    if (count($attr) > 1) {
+                        array_push($group, "ju.[nmjaringanusaha]");
+                    }
+                    break;
+                case "Tahun":
+                    array_push($vertikal, "p.[tahun] AS [Tahun]");
+                    if (count($attr) > 1) {
+                        array_push($group, "p.[tahun]");
+                    }
+                    break;
+            }
+        }
+        $horisontal = array();
+        $pivotfor = "";
+        foreach ($vhorizontal1 as $value) {
+            switch ($value) {
+                case "Desa":
+                    array_push($horisontal, "desa.[nmdesa] AS [Desa]");
+                    $join.=" JOIN [desa] desa ON p.[kddesa] = desa.[kddesa]";
+                    $pivotfor = " [Desa] IN ([" . implode("],[", $kddesa1) . "]) ";
+                    if (count($attr) > 1) {
+                        array_push($group, "desa.[nmdesa]");
+                    }
+                    break;
+                case "Kecamatan":
+                    array_push($horisontal, "kec.[nmkec] AS [Kecamatan]");
+                    $join.=" JOIN [kecamatan] kec ON kec.[kdkec] = p.[kdkec] ";
+                    $pivotfor = " [Kecamatan] IN ([" . implode("],[", $kdkec1) . "]) ";
+                    if (count($attr) > 1) {
+                        array_push($group, "kec.[nmkec]");
+                    }
+                    break;
+                case "Kabupaten":
+                    array_push($horisontal, "kab.[nmkab] AS [Kabupaten]");
+                    $join.=" JOIN [kabupaten] kab ON kab.[kdkab] = p.[kdkab] ";
+                    $pivotfor = " [Kabupaten] IN ([" . implode("],[", $kdkab1) . "]) ";
+                    if (count($attr) > 1) {
+                        array_push($group, "kab.[nmkab]");
+                    }
+                    break;
+                case "Provinsi":
+                    array_push($horisontal, "prop.[nmprop] AS [Provinsi]");
+                    $join.=" JOIN [propinsi] prop ON prop.[kdprop] = p.[kdprop] ";
+                    $pivotfor = " [Provinsi] IN ([" . implode("],[", $kdprop1) . "]) ";
+                    if (count($attr) > 1) {
+                        array_push($group, "prop.[nmprop]");
+                    }
+                    break;
+
+                case "Kategori":
+                    array_push($horisontal, "kat.[nmkategori] AS [Kategori]");
+                    $join.=" JOIN [kategori] kat ON kat.[kdkategori] = p.[kdkategori] ";
+                    $pivotfor = " [Kategori] IN ([" . implode("],[", $kdkategori1) . "]) ";
+                    if (count($attr) > 1) {
+                        array_push($group, "kat.[nmkategori] ");
+                    }
+                    break;
+                case "Kbli":
+                    array_push($horisontal, "kbli.[nmkbli] AS [KBLI]");
+                    $join.=" JOIN [kbli] kbli ON kbli.[kdkbli] = p.[kdkbli] ";
+                    $pivotfor = " [KBLI] IN ([" . implode("],[", $kdkbli1) . "]) ";
+                    if (count($attr) > 1) {
+                        array_push($group, "kbli.[nmkbli]");
+                    }
+                    break;
+                case "Status Perusahaan":
+                    array_push($horisontal, "kon.[nmkondisi] AS [Status Perusahaan]");
+                    $join.=" JOIN [statusperusahaan] kon ON kon.[kdkondisi] = p.[statusperusahaan] ";
+                    $pivotfor = " [Status Perusahaan] IN ([" . implode("],[", $kdkondisi1) . "]) ";
+                    if (count($attr) > 1) {
+                        array_push($group, "kon.[nmkondisi]");
+                    }
+                    break;
+                case "Unit Statistik":
+                    array_push($horisontal, "su.[nmsu] AS [Unit Statistik]");
+                    $join.=" JOIN [unitstatistik] su ON su.[kdsu] = p.[unitstatistik] ";
+                    $pivotfor = " [Unit Statistik] IN ([" . implode("],[", $kdsu1) . "]) ";
+                    if (count($attr) > 1) {
+                        array_push($group, "su.[nmsu]");
+                    }
+                    break;
+                case "Sektor Institusi":
+                    array_push($horisontal, "ins.[nminstitusi] AS [Sektor Institusi]");
+                    $join.=" JOIN [institusi] ins ON ins.[kdinstitusi] = p.[institusi] ";
+                    $pivotfor = " [Sektor Institusi] IN ([" . implode("],[", $kdinstitusi1) . "]) ";
+                    if (count($attr) > 1) {
+                        array_push($group, "ins.[nminstitusi]");
+                    }
+                    break;
+                case "Kepemilikan":
+                    array_push($horisontal, "kep.[nmkepemilikan] AS [Kepemilikan]");
+                    $join.=" JOIN [kepemilikan] kep ON kep.[kdkepemilikan] = p.[kepemilikan] ";
+                    $pivotfor = " [Kepemilikan] IN ([" . implode("],[", $kdkepemilikan1) . "]) ";
+                    if (count($attr) > 1) {
+                        array_push($group, "kep.[nmkepemilikan]");
+                    }
+                    break;
+                case "Jaringan Usaha":
+                    array_push($horisontal, "ju.[nmjaringanusaha] AS [Jaringan Usaha]");
+                    $join.=" JOIN [jaringanusaha] ju ON ju.[kdjaringanusaha] = p.[jaringanusaha] ";
+                    $pivotfor = " [Jaringan Usaha] IN ([" . implode("],[", $kdjaringanusaha1) . "]) ";
+                    if (count($attr) > 1) {
+                        array_push($group, "ju.[nmjaringanusaha]");
+                    }
+                    break;
+                case "Tahun":
+                    array_push($horisontal, "p.[tahun] AS [Tahun]");
+                    $pivotfor = " [Tahun] IN ([" . implode("],[", $thn) . "]) ";
+                    if (count($attr) > 1) {
+                        array_push($group, "p.[tahun]");
+                    } break;
+            }
+        }
+
+        $attrnama = array();
+        $pivotsum = "";
+
+        foreach ($attr as $value) {
+            switch ($value) {
+                case "jumlahunit":
+                    if (count($attr) > 1) {
+                        array_push($attrnama, " SUM (p.[jumlahunit]) AS [Jumlah Akhir Tahun]");
+                    } else {
+                        array_push($attrnama, "p.[jumlahunit] AS [Jumlah Akhir Tahun]");
+                        $pivotsum = " SUM ([Jumlah Akhir Tahun]) ";
+                        $namatabel = "Jumlah Unit pada Akhir Tahun";
+                    }
+                    break;
+                case "survived1":
+                    if (count($attr) > 1) {
+                        array_push($attrnama, " SUM(p.[survived1]) AS [Survived Tahun I]");
+                    } else {
+                        array_push($attrnama, "p.[survived1] AS [Survived Tahun I]");
+                        $pivotsum = " SUM ([Survived Tahun I]) ";
+                        $namatabel = "Jumlah Unit yang Survived Tahun I";
+                    }
+                    break;
+                case "survivalrate1":
+                    if (count($attr) > 1) {
+                        array_push($attrnama, " SUM(p.[survivalrate1]) AS [Survival Rate Tahun I]");
+                    } else {
+                        array_push($attrnama, "p.[survivalrate1] AS [Survival Rate Tahun I]");
+                        $pivotsum = " SUM ([Survival Rate Tahun I]) ";
+                        $namatabel = "Survival Rate Tahun I";
+                    }
+                    break;
+                case "survived2":
+                    if (count($attr) > 1) {
+                        array_push($attrnama, " SUM(p.[survived2]) AS [Survived Tahun II]");
+                    } else {
+                        array_push($attrnama, "p.[survived2] AS [Survived Tahun II]");
+                        $pivotsum = " SUM ([Survived Tahun II]) ";
+                        $namatabel = "Jumlah Unit yang Survived Tahun II";
+                    }
+                    break;
+                case "survivalrate2":
+                    if (count($attr) > 1) {
+                        array_push($attrnama, " SUM(p.[survivalrate2]) AS [Survival Rate Tahun II]");
+                    } else {
+                        array_push($attrnama, "p.[survivalrate2] AS [Survival Rate Tahun II]");
+                        $pivotsum = " SUM ([Survival Rate Tahun II]) ";
+                        $namatabel = "Survival Rate Tahun II";
+                    }
+                    break;
+                case "survived3":
+                    if (count($attr) > 1) {
+                        array_push($attrnama, " SUM(p.[survived3]) AS [Survived Tahun III]");
+                    } else {
+                        array_push($attrnama, "p.[survived3] AS [Survived Tahun III]");
+                        $pivotsum = " SUM ([Survived Tahun III]) ";
+                        $namatabel = "Jumlah Unit yang Survived Tahun III";
+                    }
+                    break;
+                case "survivalrate3":
+                    if (count($attr) > 1) {
+                        array_push($attrnama, " SUM(p.[survivalrate3]) AS [Survival Rate Tahun III]");
+                    } else {
+                        array_push($attrnama, "p.[survivalrate3] AS [Survival Rate Tahun III]");
+                        $pivotsum = " SUM ([Survival Rate Tahun III]) ";
+                        $namatabel = "Survival Rate Tahun III";
+                    }
+                    break;
+                case "jumlahmasuk":
+                    if (count($attr) > 1) {
+                        array_push($attrnama, " SUM(p.[jumlahmasuk]) AS [Jumlah Masuk]");
+                    } else {
+                        array_push($attrnama, "p.[jumlahmasuk] AS [Jumlah Masuk]");
+                        $pivotsum = " SUM ([Jumlah Masuk]) ";
+                        $namatabel = "Jumlah Unit yang Masuk";
+                    }
+                    break;
+                case "jumlahkeluar":
+                    if (count($attr) > 1) {
+                        array_push($attrnama, " SUM(p.[jumlahkeluar]) AS [Jumlah Keluar]");
+                    } else {
+                        array_push($attrnama, "p.[jumlahkeluar] AS [Jumlah Keluar]");
+                        $pivotsum = " SUM ([Jumlah Keluar]) ";
+                        $namatabel = "Jumlah Unit yang Keluar";
+                    }
+                    break;
+                case "jumlahunit0":
+                    if (count($attr) > 1) {
+                        array_push($attrnama, " SUM(p.[jumlahunit0]) AS [Jumlah Awal Tahun]");
+                    } else {
+                        array_push($attrnama, "p.[jumlahunit0] AS [Jumlah Awal Tahun]");
+                        $pivotsum = " SUM ([Jumlah Awal Tahun]) ";
+                        $namatabel = "Jumlah Unit di Awal Tahun";
+                    }
+                    break;
+                case "beroperasi":
+                    if (count($attr) > 1) {
+                        array_push($attrnama, " SUM(p.[beroperasi]) AS [Jumlah Aktif Beroperasi]");
+                    } else {
+                        array_push($attrnama, "p.[beroperasi] AS [Jumlah Aktif Beroperasi]");
+                        $pivotsum = " SUM ([Jumlah Aktif Beroperasi]) ";
+                        $namatabel = "Jumlah Unit yang Aktif Beroperasi";
+                    }
+                    break;
+                case "jumlahunit1":
+                    if (count($attr) > 1) {
+                        array_push($attrnama, " SUM(p.[jumlahunit1]) AS [Jumlah Akhir Tahun]");
+                    } else {
+                        array_push($attrnama, "p.[jumlahunit1] AS [Jumlah Akhir Tahun]");
+                        $pivotsum = " SUM ([Jumlah Akhir Tahun]) ";
+                        $namatabel = "Jumlah Unit pada Akhir Tahun";
+                    }
+                    break;
+                case "perubahan":
+                    if (count($attr) > 1) {
+                        array_push($attrnama, " SUM(p.[perubahan]) AS [Perubahan]");
+                    } else {
+                        array_push($attrnama, "p.[perubahan] AS [Perubahan]");
+                        $pivotsum = " SUM ([Perubahan]) ";
+                        $namatabel = "Perubahan Jumlah Unit";
+                    }
+                    break;
+                default:
+                    if (count($attr) > 1) {
+                        array_push($attrnama, " SUM(p.[jumlahunit1]) AS [Jumlah Akhir Tahun]");
+                    } else {
+                        array_push($attrnama, "p.[jumlahunit1] AS [Jumlah Akhir Tahun]");
+                        $pivotsum = " SUM ([Jumlah Akhir Tahun]) ";
+                        $namatabel = "Jumlah Unit pada Akhir Tahun";
+                    }
+            }
+        }
+
+        //mengatur nama tabel
+        $namatabel = strtoupper($namatabel . ", Tahun " . implode(", ", $tabeltahun) . " di " . $lokasi);
+        $this->namatabel = $namatabel;
+
+        $field = "";
+        if (count($vertikal) != 0) {
+            $field = $field . implode(",", $vertikal);
+        }
+
+        if (count($horisontal) != 0) {
+            if (count($vertikal) != 0) {
+                $field = $field . ",";
+            }
+            $field = $field . implode(",", $horisontal);
+        }
+        $kondisi = "";
+        if (count($kdsu1) != 0) {
+            $kondisi = $kondisi . "') and p.[unitstatistik] in ('" . implode("','", $kdsu1);
+        }
+        if (count($kdprop1) != 0) {
+            $kondisi = $kondisi . "') and p.[kdprop] in ('" . implode("','", $kdprop1);
+        }
+        if (count($kdkab1) != 0) {
+            $kondisi = $kondisi . "') and p.[kdkab] in ('" . implode("','", $kdkab1);
+        }
+        if (count($kdkec1) != 0) {
+            $kondisi = $kondisi . "') and p.[kdkec] in ('" . implode("','", $kdkec1);
+        }
+        if (count($kddesa1) != 0) {
+            $kondisi = $kondisi . "') and p.[kddesa] in ('" . implode("','", $kddesa1);
+        }
+        if (count($kdkategori1) != 0) {
+            $kondisi = $kondisi . "') and p.[kdkategori] in ('" . implode("','", $kdkategori1);
+        }
+        if (count($kdkbli1) != 0) {
+            $kondisi = $kondisi . "') and p.[kdkbli] in ('" . implode("','", $kdkbli1);
+        }
+        if (count($kdkondisi1) != 0) {
+            $kondisi = $kondisi . "') and p.[statusperusahaan] in ('" . implode("','", $kdkondisi1);
+        }
+        if (count($kdinstitusi1) != 0) {
+            $kondisi = $kondisi . "') and p.[institusi] in ('" . implode("','", $kdinstitusi1);
+        }
+        if (count($kdkepemilikan1) != 0) {
+            $kondisi = $kondisi . "') and p.[kepemilikan] in ('" . implode("','", $kdkepemilikan1);
+        }
+        if (count($kdjaringanusaha1) != 0) {
+            $kondisi = $kondisi . "') and p.[jaringanusaha] in ('" . implode("','", $kdjaringanusaha1);
+        }
+        if (count($attr) > 1) {
+            //tabel biasa, variabel horisontal harus attributes
+            $tsql = "SELECT "
+                    . $field
+                    . "," . implode(",", $attrnama)
+                    . " FROM [" . $tabel . "] p "
+                    . $join
+                    . " WHERE p.[tahun] in ('" . implode("','", $thn)
+                    . $kondisi . "')"
+                    . " GROUP BY " . implode(",", $group);
+        } else {
+            //T-SQL pivotting table
+            $tsql = "SELECT *" . " FROM (" . "SELECT " . $field
+                    . "," . implode(",", $attrnama) . " FROM [" . $tabel . "] p "
+                    . $join . " WHERE p.[tahun] in ('" . implode("','", $thn)
+                    . $kondisi . "')". ") AS [tabelsumber] "
+                    . "PIVOT (" . $pivotsum . "FOR "
+                    . $pivotfor . ") AS [tabelbaru]";
+        }
+
+        $dataProvider = new SqlDataProvider([
+            "sql" => $tsql,
+        ]);
+       
+        return $dataProvider;
+         //cek query
+        // return $tsql;
+    }
+
+    public function saveGiven() {
+//atribut
+        if (is_string($this->attributes)) {
+            $attr = array_filter(explode(",", str_replace("null", "", $this->attributes)));
+        } else {
+            $attr = array_filter(str_replace("null", "", $this->attributes));
+        }
+//mengatur default subjek dan atribut jika atribut kosong
+        if (count($attr) == 0) {
+            if ($this->subject == "su" || $this->subject == "se") {
+                array_push($attr, "survived1");
+            } else {
+                array_push($attr, "jumlahunit1");
+                $this->subject = "ju";
+            }
+        }
+//tahun
+        if (is_string($this->years)) {
+            $thn = array_filter(explode(",", str_replace("null", "", $this->years)));
+        } else {
+            $thn = array_filter(str_replace("null", "", $this->years));
+        }
+//mengatur default tahun jika tidak ada tahun yang dipilih
+        if (count($thn) == 0) {
+
+            array_push($thn, "2015");
+        }
+        $tabeltahun = array(); //untuk mengatur tahun dalam nama tabel
+        $namatabel = "";
+        if ($this->subject == "se") {
+            if (count($attr) > 1) {
+                $namatabel = "Survival Unit yang Masuk ";
+            }
+            $tabel = "survival_birth";
+
+            foreach ($thn as $value) {
+                $tabeltahun[$value] = ((int) $value - 3) . "-" . $value;
+            }
+        } elseif ($this->subject == "su") {
+            if (count($attr) > 1) {
+                $namatabel = "Survival Unit Usaha ";
+            }
+            $tabel = "survival_unit";
+            foreach ($thn as $value) {
+                $tabeltahun[$value] = ((int) $value - 3) . "-" . $value;
+            }
+        } else {
+            if (count($attr) > 1) {
+                $namatabel = "Jumlah Unit Usaha ";
+            }
+            $tabel = "jumlah_unit";
+            foreach ($thn as $value) {
+                $tabeltahun[$value] = $value;
+            }
+        }
+//variabel vertikal dan horisontal
+        $vvertikal1 = array_filter(explode(",", str_replace("null", "", $this->vvertikal)));
+        $vhorizontal1 = array_filter(explode(",", str_replace("null", "", $this->vhorizontal)));
+//meng-update nama tabel
+        $namatabel = $namatabel . " menurut " . implode(", ", $vvertikal1) . ", " . implode(", ", $vhorizontal1);
+        $lokasi = "";
+//mengatur lokasi
+        $prop1 = str_replace("null", "", $this->kdprop);
+        $kab1 = str_replace("null", "", $this->kdkab);
+        $kec1 = str_replace("null", "", $this->kdkec);
+        $desa1 = str_replace("null", "", $this->kddesa);
+        if (is_string($prop1)) {
+            $kdprop1 = array_filter(explode(",", $prop1));
+        } else {
+            $kdprop1 = array_filter($prop1);
+        }
+        if (is_string($kab1)) {
+            $kdkab1 = array_filter(explode(",", $kab1));
+        } else {
+            $kdkab1 = array_filter($kab1);
+        }
+        if (is_string($kec1)) {
+            $kdkec1 = array_filter(explode(",", $kec1));
+        } else {
+            $kdkec1 = array_filter($kec1);
+        }
+        if (is_string($desa1)) {
+            $kddesa1 = array_filter(explode(",", $desa1));
+        } else {
+            $kddesa1 = array_filter($desa1);
+        }
+
+        if (count($kdprop1) == 0) {
+            $lokasi = "Indonesia";
+        } elseif (count($kdkab1) == 0) {
+            $propinsi = Propinsi::find()->where(['not', ['kdprop' => '95']])->andWhere(['not', ['kdprop' => '00']])
+                            ->andWhere(['kdprop' => $kdprop1[0]])->all();
+            $lokasi = "Provinsi ";
+            foreach ($propinsi as $value) {
+                $lokasi = $lokasi . trim($value->nmprop);
+            }
+        } elseif (count($kdkec1) == 0) {
+            $propinsi = Propinsi::find()->where(['not', ['kdprop' => '95']])->andWhere(['not', ['kdprop' => '00']])
+                            ->andWhere(['kdprop' => $kdprop1[0]])->all();
+            $kabupaten = Kabupaten::find()->where(['kdkab' => $kdkab1[0], 'kdprop' => $kdprop1[0]])->all();
+            $lokasi = "Kabupaten/Kota ";
+            foreach ($kabupaten as $value) {
+                $lokasi = $lokasi . trim($value->nmkab);
+            }
+            $lokasi = $lokasi . " Provinsi ";
+            foreach ($propinsi as $value) {
+                $lokasi = $lokasi . trim($value->nmprop);
+            }
+        } elseif (count($kddesa1) == 0) {
+            $propinsi = Propinsi::find()->where(['not', ['kdprop' => '95']])->andWhere(['not', ['kdprop' => '00']])
+                            ->andWhere(['kdprop' => $kdprop1[0]])->all();
+            $kabupaten = Kabupaten::find()->where(['kdkab' => $kdkab1[0], 'kdprop' => $kdprop1[0]])->all();
+            $kecamatan = Kecamatan::find()->where(['kdkec' => $kdkec1[0], 'kdkab' => $kdkab1[0], 'kdprop' => $kdprop1[0]])->all();
+            $lokasi = "Kecamatan ";
+
+            foreach ($kecamatan as $value) {
+                $lokasi = $lokasi . trim($value->nmkec);
+            }
+            $lokasi = $lokasi . " Kabupaten/Kota ";
+            foreach ($kabupaten as $value) {
+                $lokasi = $lokasi . trim($value->nmkab);
+            }
+            $lokasi = $lokasi . " Provinsi ";
+            foreach ($propinsi as $value) {
+                $lokasi = $lokasi . trim($value->nmprop);
+            }
+        } elseif (count($kddesa1) > 0) {
+            $propinsi = Propinsi::find()->where(['not', ['kdprop' => '95']])->andWhere(['not', ['kdprop' => '00']])
+                            ->andWhere(['kdprop' => $kdprop1[0]])->all();
+            $kabupaten = Kabupaten::find()->where(['kdkab' => $kdkab1[0], 'kdprop' => $kdprop1[0]])->all();
+            $kecamatan = Kecamatan::find()->where(['kdkec' => $kdkec1[0], 'kdkab' => $kdkab1[0], 'kdprop' => $kdprop1[0]])->all();
+            $desa = Desa::find()->where(['kddesa' => $kddesa1[0], 'kdkec' => $kdkec1[0], 'kdkab' => $kdkab1[0], 'kdprop' => $kdprop1[0]])->all();
+
+            if (count($kddesa1) == 1) {
+                $lokasi = "Desa ";
+                foreach ($desa as $value) {
+                    $lokasi = $lokasi . trim($value->nmdesa);
+                }
+            }
+            $lokasi = $lokasi . " Kecamatan ";
+            foreach ($kecamatan as $value) {
+                $lokasi = $lokasi . trim($value->nmkec);
+            }
+            $lokasi = $lokasi . " Kabupaten/Kota ";
+            foreach ($kabupaten as $value) {
+                $lokasi = $lokasi . trim($value->nmkab);
+            }
+            $lokasi = $lokasi . " Provinsi ";
+            foreach ($propinsi as $value) {
+                $lokasi = $lokasi . trim($value->nmprop);
+            }
+        }
+        if (is_string($this->kdkategori)) {
+            $kdkategori1 = array_filter(explode(",", str_replace("null", "", $this->kdkategori)));
+        } else {
+            $kdkategori1 = array_filter(str_replace("null", "", $this->kdkategori));
+        }
+
+        if (is_string($this->kdkbli)) {
+            $kdkbli1 = array_filter(explode(",", str_replace("null", "", $this->kdkbli)));
+        } else {
+            $kdkbli1 = array_filter(str_replace("null", "", $this->kdkbli));
+        }
+
+        if (is_string($this->unitstatistik)) {
+            $kdsu1 = array_filter(explode(",", str_replace("null", "", $this->unitstatistik)));
+        } else {
+            $kdsu1 = array_filter(str_replace("null", "", $this->unitstatistik));
+        }
+
+        if (is_string($this->statusperusahaan)) {
+            $kdkondisi1 = array_filter(explode(",", str_replace("null", "", $this->statusperusahaan)));
+        } else {
+            $kdkondisi1 = array_filter(str_replace("null", "", $this->statusperusahaan));
+        }
+
+        if (is_string($this->institusi)) {
+            $kdinstitusi1 = array_filter(explode(",", str_replace("null", "", $this->institusi)));
+        } else {
+            $kdinstitusi1 = array_filter(str_replace("null", "", $this->institusi));
+        }
+
+        if (is_string($this->kepemilikan)) {
+            $kdkepemilikan1 = array_filter(explode(",", str_replace("null", "", $this->kepemilikan)));
+        } else {
+            $kdkepemilikan1 = array_filter(str_replace("null", "", $this->kepemilikan));
+        }
+
+        if (is_string($this->jaringanusaha)) {
+            $kdjaringanusaha1 = array_filter(explode(",", str_replace("null", "", $this->jaringanusaha)));
+        } else {
+            $kdjaringanusaha1 = array_filter(str_replace("null", "", $this->jaringanusaha));
+        }
+
+        $namatabel = strtoupper($namatabel . ", Tahun " . implode(", ", $tabeltahun) . " di " . $lokasi);
+        //menyimpan tabel
         $historytabel = new HistoryTabel();
         $historytabel->jenis = $this->subject;
         $historytabel->variabelvertikal = implode(",", $vvertikal1);
@@ -264,393 +1057,8 @@ class GeneratorTableForm extends Model {
         }
     }
 
-    public function generateCustom() {
-//atribut
-        if (is_string($this->attributes)) {
-            $attr = array_filter(explode(",", str_replace("null", "", $this->attributes)));
-        } else {
-            $attr = array_filter(str_replace("null", "", $this->attributes));
-        }
-//mengatur default subjek dan atribut jika atribut kosong
-        if (count($attr) == 0) {
-            if ($this->subject == "su" || $this->subject == "se") {
-                array_push($attr, "survived1");
-            } else {
-                array_push($attr, "jumlahunit1");
-                $this->subject = "ju";
-            }
-        }
-//tahun
-        if (is_string($this->years)) {
-            $thn = array_filter(explode(",", str_replace("null", "", $this->years)));
-        } else {
-            $thn = array_filter(str_replace("null", "", $this->years));
-        }
-//mengatur default tahun jika tidak ada tahun yang dipilih
-        if (count($thn) == 0) {
-
-            array_push($thn, "2015");
-        }
-        $tabeltahun = array(); //untuk mengatur tahun dalam nama tabel
-        if ($this->subject == "se") {
-            $namatabel = "Survival Unit yang Masuk ";
-            $tabel = "survival_birth";
-            foreach ($thn as $value) {
-                $tabeltahun[$value] = ((int) $value - 3) . "-" . $value;
-            }
-        } elseif ($this->subject == "su") {
-            $namatabel = "Survival Unit Usaha ";
-            $tabel = "survival_unit";
-            foreach ($thn as $value) {
-                $tabeltahun[$value] = ((int) $value - 3) . "-" . $value;
-            }
-        } else {
-            $namatabel = "Jumlah Unit Usaha ";
-            $tabel = "jumlah_unit";
-            foreach ($thn as $value) {
-                $tabeltahun[$value] = $value;
-            }
-        }
-//variabel vertikal dan horisontal
-        $vvertikal1 = array_filter(explode(",", str_replace("null", "", $this->vvertikal)));
-        $vhorizontal1 = array_filter(explode(",", str_replace("null", "", $this->vhorizontal)));
-//meng-update nama tabel
-        $namatabel = $namatabel . " menurut " . implode(",", $vvertikal1) . "," . implode(",", $vhorizontal1);
-        $lokasi = "";
-//mengatur lokasi
-        $prop1 = str_replace("null", "", $this->kdprop);
-        $kab1 = str_replace("null", "", $this->kdkab);
-        $kec1 = str_replace("null", "", $this->kdkec);
-        $desa1 = str_replace("null", "", $this->kddesa);
-        if (is_string($prop1)) {
-            $kdprop1 = array_filter(explode(",", $prop1));
-        } else {
-            $kdprop1 = array_filter($prop1);
-        }
-        if (is_string($kab1)) {
-            $kdkab1 = array_filter(explode(",", $kab1));
-        } else {
-            $kdkab1 = array_filter($kab1);
-        }
-        if (is_string($kec1)) {
-            $kdkec1 = array_filter(explode(",", $kec1));
-        } else {
-            $kdkec1 = array_filter($kec1);
-        }
-        if (is_string($desa1)) {
-            $kddesa1 = array_filter(explode(",", $desa1));
-        } else {
-            $kddesa1 = array_filter($desa1);
-        }
-
-        if (count($kdprop1) == 0) {
-            $lokasi = "Indonesia";
-        } elseif (count($kdkab1) == 0) {
-            $propinsi = Propinsi::find()->where(['not', ['kdprop' => '95']])->andWhere(['not', ['kdprop' => '00']])
-                            ->andWhere(['kdprop' => $kdprop1[0]])->all();
-            $lokasi = "Provinsi ";
-            foreach ($propinsi as $value) {
-                $lokasi = $lokasi . trim($value->nmprop);
-            }
-        } elseif (count($kdkec1) == 0) {
-            $propinsi = Propinsi::find()->where(['not', ['kdprop' => '95']])->andWhere(['not', ['kdprop' => '00']])
-                            ->andWhere(['kdprop' => $kdprop1[0]])->all();
-            $kabupaten = Kabupaten::find()->where(['kdkab' => $kdkab1[0], 'kdprop' => $kdprop1[0]])->all();
-            $lokasi = "Kabupaten/Kota ";
-            foreach ($kabupaten as $value) {
-                $lokasi = $lokasi . trim($value->nmkab);
-            }
-            $lokasi = $lokasi . " Provinsi ";
-            foreach ($propinsi as $value) {
-                $lokasi = $lokasi . trim($value->nmprop);
-            }
-        } elseif (count($kddesa1) == 0) {
-            $propinsi = Propinsi::find()->where(['not', ['kdprop' => '95']])->andWhere(['not', ['kdprop' => '00']])
-                            ->andWhere(['kdprop' => $kdprop1[0]])->all();
-            $kabupaten = Kabupaten::find()->where(['kdkab' => $kdkab1[0], 'kdprop' => $kdprop1[0]])->all();
-            $kecamatan = Kecamatan::find()->where(['kdkec' => $kdkec1[0], 'kdkab' => $kdkab1[0], 'kdprop' => $kdprop1[0]])->all();
-            $lokasi = "Kecamatan ";
-
-            foreach ($kecamatan as $value) {
-                $lokasi = $lokasi . trim($value->nmkec);
-            }
-            $lokasi = $lokasi . " Kabupaten/Kota ";
-            foreach ($kabupaten as $value) {
-                $lokasi = $lokasi . trim($value->nmkab);
-            }
-            $lokasi = $lokasi . " Provinsi ";
-            foreach ($propinsi as $value) {
-                $lokasi = $lokasi . trim($value->nmprop);
-            }
-        } elseif (count($kddesa1) > 0) {
-            $propinsi = Propinsi::find()->where(['not', ['kdprop' => '95']])->andWhere(['not', ['kdprop' => '00']])
-                            ->andWhere(['kdprop' => $kdprop1[0]])->all();
-            $kabupaten = Kabupaten::find()->where(['kdkab' => $kdkab1[0], 'kdprop' => $kdprop1[0]])->all();
-            $kecamatan = Kecamatan::find()->where(['kdkec' => $kdkec1[0], 'kdkab' => $kdkab1[0], 'kdprop' => $kdprop1[0]])->all();
-            $desa = Desa::find()->where(['kddesa' => $kddesa1[0], 'kdkec' => $kdkec1[0], 'kdkab' => $kdkab1[0], 'kdprop' => $kdprop1[0]])->all();
-
-            if (count($kddesa1) == 1) {
-                $lokasi = "Desa ";
-                foreach ($desa as $value) {
-                    $lokasi = $lokasi . trim($value->nmdesa);
-                }
-            }
-            $lokasi = $lokasi . " Kecamatan ";
-            foreach ($kecamatan as $value) {
-                $lokasi = $lokasi . trim($value->nmkec);
-            }
-            $lokasi = $lokasi . " Kabupaten/Kota ";
-            foreach ($kabupaten as $value) {
-                $lokasi = $lokasi . trim($value->nmkab);
-            }
-            $lokasi = $lokasi . " Provinsi ";
-            foreach ($propinsi as $value) {
-                $lokasi = $lokasi . trim($value->nmprop);
-            }
-        }
-
-//mengatur nama tabel
-        $namatabel = strtoupper($namatabel . ", Tahun " . implode(",", $tabeltahun) . " di " . $lokasi);
-        if (is_string($this->kdkategori)) {
-            $kdkategori1 = array_filter(explode(",", str_replace("null", "", $this->kdkategori)));
-        } else {
-            $kdkategori1 = array_filter(str_replace("null", "", $this->kdkategori));
-        }
-
-        if (is_string($this->kdkbli)) {
-            $kdkbli1 = array_filter(explode(",", str_replace("null", "", $this->kdkbli)));
-        } else {
-            $kdkbli1 = array_filter(str_replace("null", "", $this->kdkbli));
-        }
-
-        if (is_string($this->unitstatistik)) {
-            $kdsu1 = array_filter(explode(",", str_replace("null", "", $this->unitstatistik)));
-        } else {
-            $kdsu1 = array_filter(str_replace("null", "", $this->unitstatistik));
-        }
-
-        if (is_string($this->statusperusahaan)) {
-            $kdkondisi1 = array_filter(explode(",", str_replace("null", "", $this->statusperusahaan)));
-        } else {
-            $kdkondisi1 = array_filter(str_replace("null", "", $this->statusperusahaan));
-        }
-
-        if (is_string($this->institusi)) {
-            $kdinstitusi1 = array_filter(explode(",", str_replace("null", "", $this->institusi)));
-        } else {
-            $kdinstitusi1 = array_filter(str_replace("null", "", $this->institusi));
-        }
-
-        if (is_string($this->kepemilikan)) {
-            $kdkepemilikan1 = array_filter(explode(",", str_replace("null", "", $this->kepemilikan)));
-        } else {
-            $kdkepemilikan1 = array_filter(",", str_replace("null", "", $this->kepemilikan));
-        }
-
-        if (is_string($this->jaringanusaha)) {
-            $kdjaringanusaha1 = array_filter(explode(",", str_replace("null", "", $this->jaringanusaha)));
-        } else {
-            $kdjaringanusaha1 = array_filter(str_replace("null", "", $this->jaringanusaha));
-        }
-
-        $vertikal = array();
-        foreach ($vvertikal1 as $value) {
-            switch ($value) {
-                case "Desa":
-                    array_push($vertikal, "kddesa");
-                    break;
-                case "Kecamatan":
-                    array_push($vertikal, "kdkec");
-                    break;
-                case "Kabupaten":
-                    array_push($vertikal, "kdkab");
-                    break;
-                case "Provinsi":
-                    array_push($vertikal, "kdprop");
-                    break;
-                case "Kategori":
-                    array_push($vertikal, "kdkategori");
-                    break;
-                case "Kbli":
-                    array_push($vertikal, "kdkbli");
-                    break;
-                case "Status Perusahaan":
-                    array_push($vertikal, "statusperusahaan");
-                    break;
-                case "Unit Statistik":
-                    array_push($vertikal, "unitstatistik");
-                    break;
-                case "Sektor Institusi":
-                    array_push($vertikal, "institusi");
-                    break;
-                case "Kepemilikan":
-                    array_push($vertikal, "kepemilikan");
-                    break;
-                case "Jaringan Usaha":
-                    array_push($vertikal, "jaringanusaha");
-                    break;
-                case "Tahun":
-                    array_push($vertikal, "tahun");
-                    break;
-            }
-        }
-        $horisontal = array();
-        foreach ($vhorizontal1 as $value) {
-            switch ($value) {
-                case "Desa":
-                    array_push($horisontal, "kddesa");
-                    break;
-                case "Kecamatan":
-                    array_push($horisontal, "kdkec");
-                    break;
-                case "Kabupaten":
-                    array_push($horisontal, "kdkab");
-                    break;
-                case "Provinsi":
-                    array_push($horisontal, "kdprop");
-                    break;
-                case "Kategori":
-                    array_push($horisontal, "kdkategori");
-                    break;
-                case "Kbli":
-                    array_push($horisontal, "kdkbli");
-                    break;
-                case "Status Perusahaan":
-                    array_push($horisontal, "statusperusahaan");
-                    break;
-                case "Unit Statistik":
-                    array_push($horisontal, "unitstatistik");
-
-                    break;
-                case "Sektor Institusi":
-                    array_push($horisontal, "institusi");
-
-                    break;
-                case "Kepemilikan":
-                    array_push($horisontal, "kepemilikan");
-                    break;
-                case "Jaringan Usaha":
-                    array_push($horisontal, "jaringanusaha");
-                    break;
-                case "Tahun":
-                    array_push($horisontal, "tahun");
-                    break;
-            }
-        }
-        $tabelatribut = array();
-        foreach ($attr as $value) {
-            switch ($value) {
-                case "jumlahunit":
-                    $tabelatribut[$value] = "Jumlah_Akhir_Tahun";
-                    break;
-                case "survived1":
-                    $tabelatribut[$value] = "Survived_Tahun_I";
-                    break;
-                case "survivalrate1":
-                    $tabelatribut[$value] = "Survival_Rate_Tahun_I";
-                    break;
-                case "survived2":
-                    $tabelatribut[$value] = "Survived_Tahun_II";
-                    break;
-                case "survivalrate2":
-                    $tabelatribut[$value] = "Survival_Rate_Tahun_II";
-                    break;
-                case "survived3":
-                    $tabelatribut[$value] = "Survived_Tahun_III";
-                    break;
-                case "survivalrate3":
-                    $tabelatribut[$value] = "Survival_Rate_Tahun _III";
-                    break;
-                case "jumlahmasuk":
-                    $tabelatribut[$value] = "Jumlah_Masuk";
-                    break;
-                case "jumlahkeluar":
-                    $tabelatribut[$value] = "Jumlah_Keluar";
-                    break;
-                case "jumlahunit0":
-                    $tabelatribut[$value] = "Jumlah_Awal_Tahun";
-                    break;
-                case "beroperasi":
-                    $tabelatribut[$value] = "Jumlah_Aktif_Beroperasi";
-                    break;
-                case "jumlahunit1":
-                    $tabelatribut[$value] = "Jumlah_Akhir_Tahun";
-                    break;
-                case "perubahan":
-                    $tabelatribut[$value] = "Perubahan";
-                    break;
-                default:$tabelatribut[$value] = "Jumlah_Akhir_Tahun";
-            }
-        }
-        $field = "";
-        if (count($vertikal) != 0) {
-            $field = $field . implode(",", $vertikal);
-        }
-        if (count($horisontal) != 0) {
-            if (count($vertikal) != 0) {
-                $field = $field . ",";
-            }
-            $field = $field . implode(",", $horisontal);
-        }
-        foreach ($tabelatribut as $key => $value) {
-            $field1 = $field
-                    . ", sum(" . $key
-                    . ") as " . $value;
-        }
-
-        $kondisi = "";
-        if (count($kdsu1) != 0) {
-            $kondisi = $kondisi . "') and unitstatistik in ('" . implode("','", $kdsu1);
-        }
-        if (count($kdprop1) != 0) {
-            $kondisi = $kondisi . "') and kdprop in ('" . implode("','", $kdprop1);
-        }
-        if (count($kdkab1) != 0) {
-            $kondisi = $kondisi . "') and kdkab in ('" . implode("','", $kdkab1);
-        }
-        if (count($kdkec1) != 0) {
-            $kondisi = $kondisi . "') and kdkec in ('" . implode("','", $kdkec1);
-        }
-        if (count($kddesa1) != 0) {
-            $kondisi = $kondisi . "') and kddesa in ('" . implode("','", $kddesa1);
-        }
-        if (count($kdkategori1) != 0) {
-            $kondisi = $kondisi . "') and kdkategori in ('" . implode("','", $kdkategori1);
-        }
-        if (count($kdkbli1) != 0) {
-            $kondisi = $kondisi . "') and kdkbli in ('" . implode("','", $kdkbli1);
-        }
-        if (count($kdkondisi1) != 0) {
-            $kondisi = $kondisi . "') and statusperusahaan in ('" . implode("','", $kdkondisi1);
-        }
-        if (count($kdinstitusi1) != 0) {
-            $kondisi = $kondisi . "') and institusi in ('" . implode("','", $kdinstitusi1);
-        }
-        if (count($kdkepemilikan1) != 0) {
-            $kondisi = $kondisi . "') and kepemilikan in ('" . implode("','", $kdkepemilikan1);
-        }
-        if (count($kdjaringanusaha1) != 0) {
-            $kondisi = $kondisi . "') and jaringanusaha in ('" . implode("','", $kdjaringanusaha1);
-        }
-        $connection = Yii::$app->getDb();
-        //T-SQL pivotting table
-        $tsql="";
-//        $tsql = "SELECT " . $field1
-//                . " FROM " . $tabel
-//                . " WHERE tahun in ('" . implode("','", $thn)
-//                . $kondisi
-//                . "')"
-//                . " GROUP BY " . $field
-//                . " ORDER BY " . $field . ";";
-        $command = $connection->createCommand($tsql);
-        
-        
-// returns all rows of the query result
-        $result = $command->queryAll();
-//cek array
-        return $result;
-//saveTable($vvertikal1,$vhorizontal1,$kdprop1,$kdkab1,$kdkec1,$kddesa1,$attr,$namatabel,$thn,$kdkategori1,$kdkondisi1,$kdkbli1,$kdsu1,$kdinstitusi1,$kdkepemilikan1,$kdjaringanusaha1);
-        //return $resulttable;
+    public function getNamatabel() {
+        return $this->namatabel;
     }
 
 }

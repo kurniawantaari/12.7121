@@ -31,7 +31,7 @@ AppAsset::register($this);
         <div class="wrap">
             <?php
             NavBar::begin([
-                'brandLabel' => '<img src="favicon.png" class="pull-left"/><span>SBR</span>',
+                'brandLabel' => '<img src="favicon.png" class="pull-left"/><span>Statistical Business Register</span>',
                 'brandUrl' => Yii::$app->homeUrl,
                 'options' => [
                     'class' => 'navbar-fixed-top navbar-inverse',
@@ -42,7 +42,7 @@ AppAsset::register($this);
                 // ['label' => 'Contact', 'url' => ['/site/contact']],
                 ['label' => 'Generate Table',
                     'items' => [
-                        ['label' => 'Given Table', 'url' => ['/generate-table/generate-given-table']],
+                        //['label' => 'Given Table', 'url' => ['/generate-table/generate-given-table']],
                         ['label' => 'Custom Table', 'url' => ['/generate-table/generate-custom-table']],
                     ],
                 ],
@@ -53,11 +53,12 @@ AppAsset::register($this);
                             'url' => ['/manage-dictionary'],
                             'visible' => Yii::$app->user->can('manageGivenTable')
                         ],
-                        '<li class="divider"></li>',
-                        ['label' => 'History of Table',
-                            'url' => ['/manage-table-history'],
-                            'visible' => Yii::$app->user->can('manageUsers')
+                       
+                        ['label' => 'Given Table List',
+                            'url' => ['/manage-given'],
+                            'visible' => Yii::$app->user->can('manageGivenTable')
                         ],
+                         '<li class="divider"></li>',
                         [
                             'label' => 'Users',
                             'url' => ['/manage-user'],
@@ -66,6 +67,7 @@ AppAsset::register($this);
                     ],
                 ],
             ];
+            $menuItems[]=['label' => 'Daftar Istilah', 'url' => ['/site/daftaristilah']];
             $menuItems[]=['label' => 'About', 'url' => ['/site/about']];
             if (Yii::$app->user->isGuest) {
 

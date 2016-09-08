@@ -1,7 +1,6 @@
 <?php
-
 /* @var $this yii\web\View */
-
+use yii\helpers\Html;
 $this->title = 'Home';
 ?>
 <div class="site-index">
@@ -9,7 +8,7 @@ $this->title = 'Home';
     <div class="jumbotron">
         <h1><i>Indonesian Statistical Business Register</h1></i></h1>
 
-        <p class="lead">Direktori unit bisnis terintegrasi.</p>
+        <p class="lead">Direktori unit usaha terintegrasi.</p>
 
     </div>
 
@@ -21,15 +20,17 @@ $this->title = 'Home';
 
                 <p>Buat tabel sesuai yang Anda inginkan dengan Custom Table. Dengan ini, variabel-variabel yang Anda butuhkan dapat dimasukkan. Untuk membangkitkan tabel, pilih menu <kbd>Generate Table</kbd> dan pilih submenu <kbd>Custom Table</kbd>, atau dengan klik tombol berikut.</p>
 
-                <p><a class="btn btn-default" href="">Custom Table &raquo;</a></p>
+                <p><?= Html::a('Custom Table &raquo;', ['/generate-table/generate-custom-table'], ['class' => 'btn btn-default']) ?>
+                </p>
+                
             </div>
-            <div class="col-lg-4">
+<!--            <div class="col-lg-4">
                 <h2>Given Table</h2>
 
                 <p>Buat tabel dari daftar yang tersedia. Dengan sekali klik Anda dapat melihat jumlah unit usaha yang terekam dalam SBR. Untuk membangkitkan tabel, pilih menu <kbd>Generate Table</kbd> dan pilih submenu <kbd>Given Table</kbd>, atau dengan klik tombol berikut.</p>
 
                 <p><a class="btn btn-default" href="">Given Table &raquo;</a></p>
-            </div>
+            </div>-->
             <div class="col-lg-4">
                 <h2>SBR</h2>
 

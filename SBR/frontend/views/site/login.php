@@ -17,7 +17,14 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="row">
         <div class="col-lg-5">
-            <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
+            <div class="well">
+                <p>*Untuk evaluasi, Anda dapat login dengan menggunakan username dan password berikut.</p>
+            <p>*Sebagai admin: username=admin, password=adminmin</p>
+            <p>*Sebagai tim sbr: username=sbr, password=sbrsbr</p>
+            <p>*Sebagai pengguna umum: username=user, password=userser</p>
+            </div>
+               
+ <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>           
 
                 <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
 

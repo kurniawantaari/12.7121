@@ -13,8 +13,10 @@ class AppAsset extends AssetBundle {
     public $baseUrl = '@web';
     public $css = [
         'css/site.css',
+        'dragtable/dragtable.css',
     ];
     public $js = [
+        'dragtable/jquery.dragtable.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

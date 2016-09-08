@@ -19,7 +19,6 @@ class m130524_201442_init extends Migration
             'password_hash' => $this->string()->notNull(),
             'password_reset_token' => $this->string(),
             'account_activation_token' => $this->string(),
-//            'password_reset_token' => $this->string()->unique(),
             'email' => $this->string()->notNull()->unique(),
             'status' => $this->smallInteger()->notNull()->defaultValue(5),
             'created_at' => $this->integer()->notNull(),

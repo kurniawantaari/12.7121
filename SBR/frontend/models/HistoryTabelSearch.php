@@ -60,7 +60,7 @@ class HistoryTabelSearch extends HistoryTabel
         // grid filtering conditions
         $query->andFilterWhere([
             'idtabel' => $this->idtabel,
-                    ]);
+        ]);
 
         $query->andFilterWhere(['like', 'nmtabel', $this->nmtabel])
             ->andFilterWhere(['like', 'jenis', $this->jenis])

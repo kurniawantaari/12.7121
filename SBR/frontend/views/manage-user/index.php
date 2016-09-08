@@ -14,7 +14,6 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="user-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]);  ?>
     <?= Html::a('Add User', ['/site/signup'], ['class' => 'btn btn-primary']) ?>
     <?php Pjax::begin(); ?>    <?=
     GridView::widget([

@@ -15,6 +15,7 @@ use frontend\models\ResetPasswordForm;
 use frontend\models\AccountActivation;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
+use frontend\models\SearchDictionary;
 
 /**
  * Site controller
@@ -72,13 +73,16 @@ class SiteController extends Controller {
      * @return mixed
      */
     public function actionIndex() {
-        return $this->render('index');
+//jumlah masuk, jumlah keluar tahun kemarin
+        //jumlah menurut propinsi tahun kemarin
+        //jumlah menurut sektor institusi tahun kemarin
+        //survived 3 tahun lalu//line chart
+        
+        return $this->render('index', [
+        ]);
     }
 
-    public function actionGenerateGivenTable() {
-        return $this->render('givenTable');
-    }
-       /**
+    /**
      * Logs in a user.
      *
      * @return mixed
@@ -138,6 +142,22 @@ class SiteController extends Controller {
      */
     public function actionAbout() {
         return $this->render('about');
+    }
+
+    /**
+     * Displays dictionary page.
+     *
+     * @return mixed
+     */
+    public function actionDaftaristilah() {
+
+        $searchModel = new SearchDictionary();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('kamus', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+        ]);
     }
 
     /**
@@ -248,11 +268,12 @@ class SiteController extends Controller {
         } else {
             $id = \Yii::$app->user->identity->id;
             $model = User::findOne($id);
-            
+
             return Yii::$app->runAction('manage-user/update', [
-                'model' => $model,
-                'id' => $id,
+                        'model' => $model,
+                        'id' => $id,
             ]);
         }
     }
+
 }

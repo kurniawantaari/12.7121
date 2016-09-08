@@ -13,9 +13,8 @@ use frontend\models\Institusi;
 use frontend\models\Kepemilikan;
 use frontend\models\Jaringanusaha;
 use frontend\models\Propinsi;
-use yii\widgets\Pjax;
 
-$this->title = 'Table Generator';
+$this->title = 'Generate Custom Table';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="generate-table">
@@ -29,6 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ]);
     ?>
     <h4 class="wizard-title">Step 1: Select Subject</h4>
+    <div class="bg-info">*Subjek harus dipilih.</div>
     <?php
     echo $form->field($model, 'subject')->widget(Select2::classname(), [
         'data' => ['ju' => 'Jumlah Unit Usaha', 'su' => 'Survival Unit Usaha', 'se' => 'Survival Unit yang Masuk'],
@@ -59,9 +59,9 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ])->label("Subject");
     ?>
-    <?= Html::button('Next: Step2 Select Attributes and Years', [ 'class' => 'btn btn-primary', 'id' => 'btn-next-to-step2']) ?>
-
+    
     <h4 class="wizard-title">Step 2: Select Attributes and Years</h4>
+    <div class="bg-info">*Atribut harus dipilih, minimal 1.</div>
     <?=
     $form->field($model, 'attributes')->widget(Select2::classname(), [
         'data' => [],
@@ -78,7 +78,8 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ])->label("Attributes")
     ?>
-    <?=
+    <div class="bg-info">*Tahun harus dipilih, minimal 1.</div>
+            <?=
     $form->field($model, 'years')->widget(Select2::classname(), [
         'data' => [],
         'language' => 'en',
@@ -93,12 +94,10 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ])->label("Years")
     ?>
-    <?= Html::button('Back', [ 'class' => 'btn btn-primary', 'id' => 'btn-back-to-step1']) ?>
-    <?=
-    Html::button('Next: Step 3 Select Locations', [ 'class' => 'btn btn-primary', 'id' => 'btn-next-to-step3'])
-    ?>
+   
     <h4 class="wizard-title">Step 3: Select Locations</h4>
-    <?php
+    <div class="bg-info">*Lokasi dapat diabaikan (di-skip).</div>
+        <?php
     echo $form->field($model, 'kdprop')->widget(Select2::classname(), [
         'data' => ArrayHelper::map(Propinsi::find()->where(['not', ['kdprop' => '00']])
                         ->andWhere(['not', ['kdprop' => '95']])->all(), 'kdprop', 'nmprop'),
@@ -190,11 +189,9 @@ if ($(this).val() == "" || $(this).val() == null) {
         ],
     ])->label("Desa");
     ?>
-    <?= Html::button('Back', [ 'class' => 'btn btn-primary', 'id' => 'btn-back-to-step2']) ?>
-    <?php
-    echo Html::button('Next: Step 4 Select Variables', [ 'class' => 'btn btn-primary', 'id' => 'btn-next-to-step4']);
-    ?>
+   
     <h4 class="wizard-title">Step 4: Select Variables</h4>
+    <div class="bg-info">*Pilih dan filter variabel yang diinginkan.</div>
     <?=
     $form->field($model, 'kdkategori')->widget(Select2::classname(), [
         'data' => ArrayHelper::map(Kategori::find()->where(['tahun' => '2015'])->all(), 'kdkategori', 'nmkategori'),
@@ -303,10 +300,9 @@ if ($(this).val() == "" || $(this).val() == null) {
         ],
     ])->label("Jaringan Usaha")
     ?>
-    <?= Html::button('Back', [ 'class' => 'btn btn-primary', 'id' => 'btn-back-to-step3']) ?>
-    <?=
-    Html::button('Next: Step 5 Select Layout', [ 'class' => 'btn btn-primary', 'id' => 'btn-next-to-step5',
-        'onclick' => '$.post("' . Url::to(['get-variables', 'kdkategori' => '']) . '"+ $("#selectKategori").val()
+        <?=
+    Html::button('Select Layout', [ 'class' => 'btn btn-primary', 'id' => 'btn-next-to-step5',
+        'onclick' => ' $("#variabelVertikal,#variabelHorizontal").empty();$.post("' . Url::to(['get-variables', 'kdkategori' => '']) . '"+ $("#selectKategori").val()
             + "&kdkbli=" + $("#selectKbli").val()
             + "&kdsu=" + $("#selectUnitstatistik").val()
             + "&kdkondisi=" + $("#selectStatusperusahaan").val()
@@ -322,26 +318,26 @@ if ($(this).val() == "" || $(this).val() == null) {
             ,function (data) {$("#optionalVariables").html(data);});'])
     ?>
     <h4 class="wizard-title">Step 5: Select Layout</h4>
+    <div class="bg-info">*Atur tata letak tabel yang diinginkan. Saat ini, sistem hanya dapat memproses 1 variabel horizontal.</div>
+    <br>
     <div class="select-variables">
         <div class="container-fluid">
             <div class=" col-xs-12 col-sm-4">
-                <p>select variables here</p>
+                <p>Available variables:</p>
                 <ul id="optionalVariables" class="optionalVariables" style="padding:5px;min-height: 50px;background:#eaeae1;">
                 </ul>
             </div>
             <!--drop object here-->
             <div class="col-xs-12 col-sm-8 drop">  
-                <p>drop variable here</p>
+                <p>Drag and drop variables here:</p>
 
                 <ul id="variabelVertikal" class="optionalVariables col-xs-6 col-sm-5" style="min-height:200px;padding:2px 0 2px 0;background:whitesmoke">
-                    <p>drop variable vertical here</p>
-
+                    
                 </ul>
 
 
                 <ul id="variabelHorizontal" class="optionalVariables col-xs-6 col-sm-7" style="min-height:100px;padding: 2px 0 2px 0;background:whitesmoke;border-left:dotted lightgrey 2px;">
-                    <p>drop variable horizontal here</p>
-
+                    
                 </ul>
 
             </div>
@@ -355,16 +351,9 @@ if ($(this).val() == "" || $(this).val() == null) {
         <p id="summaryText" class="well">
 
         </p>
-        <?= Html::button('Back', [ 'class' => 'btn btn-primary', 'id' => 'btn-back-to-step4']) ?>
-        <?= Html::resetButton('Reset/New', ['class' => 'btn btn-warning']) ?>
-        <?= Html::submitButton('Generate Table', ['class ' => 'btn btn-success disabled', 'id' => 'generateTable']) ?>
+      <?= Html::submitButton('Generate Table', ['class ' => 'btn btn-success disabled', 'id' => 'generateTable']) ?>
     </div>
     <?php ActiveForm::end() ?>
-
-    <div id="result"></div>
-</div>  
-
-
 
 <?php
 $css = <<< CSS
@@ -377,6 +366,7 @@ $css = <<< CSS
         margin: 2px;
         list-style-position: inside;
         list-style-type: none;
+        background:#ffcc99;
     }
     .drop-placeholder {/*placeholder=pembantu dimana item akan ditempatkan*/
         background-color:transparent !important;
@@ -446,5 +436,10 @@ $this->registerJS('
                 "jaringan usaha:" + p);
         $("#generateTable").removeClass("disabled");
     });
+');
+$this->registerCss('
+        div.bg-info{
+    padding:10px;
+        }
 ');
 ?>

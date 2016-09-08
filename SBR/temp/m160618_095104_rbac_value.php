@@ -39,14 +39,4 @@ class m160618_095104_rbac_value extends Migration
         return false;
     }
 
-    /*
-    // Use safeUp/safeDown to run migration code within a transaction
-    public function safeUp()
-    {
-    }
-
-    public function safeDown()
-    {
-    }
-    */
 }

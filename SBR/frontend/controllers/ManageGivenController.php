@@ -3,10 +3,13 @@
 namespace frontend\controllers;
 
 use Yii;
+use frontend\models\HistoryTabel;
+use frontend\models\HistoryTabelSearch;
+use yii\web\Controller;
+use yii\web\NotFoundHttpException;
+use yii\filters\VerbFilter;
 use yii\base\InvalidParamException;
 use yii\web\BadRequestHttpException;
-use yii\web\Controller;
-use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use yii\data\SqlDataProvider;
 use frontend\models\GeneratorTableForm;
@@ -16,33 +19,85 @@ use frontend\models\Desa;
 use frontend\models\Tahun;
 use frontend\models\Kbli;
 
-class GenerateTableController extends Controller {
+/**
+ * ManageGivenController implements the CRUD actions for HistoryTabel model.
+ */
+class ManageGivenController extends Controller {
 
     /**
      * @inheritdoc
      */
-    public function actions() {
+    public function behaviors() {
         return [
-            'error' => [
-                'class' => 'yii\web\ErrorAction',
-            ],
-            'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
-                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
             ],
         ];
     }
 
+    /**
+     * Lists all HistoryTabel models.
+     * @return mixed
+     */
     public function actionIndex() {
-        $model = new GenerateCustomTableForm();
-        $dataProvider = new SqlDataProvider([
-            'sql' => 'SELECT * FROM user',
-        ]);
+        $searchModel = new HistoryTabelSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        return $this->render('tesTable', [
+        return $this->render('index', [
+                    'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
-                    'model' => $model
         ]);
+    }
+
+    /**
+     * Creates a new HistoryTabel model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
+     */
+    public function actionCreate() {
+        $model = new GeneratorTableForm();
+        if ($model->load(Yii::$app->request->post())) {
+            $model->saveGiven();
+            $searchModel = new HistoryTabelSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+        ]);
+        } else {
+            return $this->render('create', ['model' => $model]);
+        }
+    }
+
+    /**
+     * Deletes an existing HistoryTabel model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionDelete($id) {
+        $this->findModel($id)->delete();
+
+        return $this->redirect(['index']);
+    }
+
+    /**
+     * Finds the HistoryTabel model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param integer $id
+     * @return HistoryTabel the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModel($id) {
+        if (($model = HistoryTabel::findOne($id)) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
     }
 
     public function actionGetDesa($kdprop, $kdkab, $kdkec) {
@@ -267,36 +322,4 @@ class GenerateTableController extends Controller {
         }
     }
 
-    public function actionGenerateCustomTable() {
-        $model = new GeneratorTableForm();
-        if ($model->load(Yii::$app->request->post())) {
-            $tabel = $model->generateCustom();
-            $judultabel = $model->getNamatabel();
-            return $this->render('view', [
-                        'dataProvider' => $tabel,
-                        'judultabel' => $judultabel,
-            ]);
-        } else {
-            return $this->render('_formCustom', ['model' => $model]);
-        }
-    }
-
-    public function actionGenerateGivenTable() {
-        //$model = new GeneratorTable();
-        //$model = new \frontend\models\HistoryTabel();
-        return $this->render('givenTable', [
-                        //'model' => $model,
-                        //  'form'=>$form,
-        ]);
-    }
-
-    public function actionCreateGiventable() {
-        $model = new GeneratorTableForm();
-        if ($model->load(Yii::$app->request->post())) {
-            $model->createGiven();
-              Yii::$app->session->setFlash('info', 'Penyimpanan given table telah diproses.');
-        }
-        return $this->render('_createGiven', ['model' => $model]);
-    }
-  
 }
