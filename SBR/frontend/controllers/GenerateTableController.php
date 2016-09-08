@@ -161,15 +161,15 @@ class GenerateTableController extends Controller {
             if (sizeof($thn) > 1) {
                 echo "<li value='Tahun'>Tahun</li>";
             }
-            if (sizeof($kdprop1) == 0) {
-                echo "<li value='Provinsi'>Provinsi</li>";
-            } elseif (sizeof($kdkab1) == 0) {
-                echo "<li value='Kabupaten'>Kabupaten</li>";
-            } elseif (sizeof($kdkec1) == 0) {
-                echo "<li value='Kecamatan'>Kecamatan</li>";
-            } elseif (sizeof($kddesa1) == 0) {
-                echo "<li value='Desa'>Desa</li>";
-            }
+//            if (sizeof($kdprop1) == 0) {
+//                echo "<li value='Provinsi'>Provinsi</li>";
+//            } elseif (sizeof($kdkab1) == 0) {
+//                echo "<li value='Kabupaten'>Kabupaten</li>";
+//            } elseif (sizeof($kdkec1) == 0) {
+//                echo "<li value='Kecamatan'>Kecamatan</li>";
+//            } elseif (sizeof($kddesa1) == 0) {
+//                echo "<li value='Desa'>Desa</li>";
+//            }
             if (sizeof($kdkategori1) > 1) {
                 echo "<li value='Kategori'>Kategori</li>";
             }
@@ -272,9 +272,12 @@ class GenerateTableController extends Controller {
         if ($model->load(Yii::$app->request->post())) {
             $tabel = $model->generateCustom();
             $judultabel = $model->getNamatabel();
+            //persiapan sidang only
+            $tsql=$model->getTsql();
             return $this->render('view', [
                         'dataProvider' => $tabel,
                         'judultabel' => $judultabel,
+                'tsql' => $tsql,
             ]);
         } else {
             return $this->render('_formCustom', ['model' => $model]);

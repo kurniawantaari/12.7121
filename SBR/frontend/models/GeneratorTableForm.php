@@ -38,6 +38,8 @@ class GeneratorTableForm extends Model {
     public $kepemilikan;
     public $jaringanusaha;
     public $namatabel;
+    //persiapan sidang only
+    public $tsql;
 
     /**
      * @inheritdoc
@@ -49,7 +51,6 @@ class GeneratorTableForm extends Model {
             [['vvertikal', 'vhorizontal', 'attributes', 'years', 'kdprop', 'kdkab', 'kdkec', 'kddesa', 'kdkategori', 'kdkbli', 'unitstatistik', 'statusperusahaan', 'institusi', 'kepemilikan', 'jaringanusaha'], 'safe'],
         ];
     }
-
 
     public function generateCustom() {
 //atribut
@@ -343,7 +344,17 @@ class GeneratorTableForm extends Model {
                 case "Desa":
                     array_push($horisontal, "desa.[nmdesa] AS [Desa]");
                     $join.=" JOIN [desa] desa ON p.[kddesa] = desa.[kddesa]";
-                    $pivotfor = " [Desa] IN ([" . implode("],[", $kddesa1) . "]) ";
+                    $row = (new \yii\db\Query())
+                            ->select(['nmdesa'])
+                            ->from('desa')
+                            ->where(['in', 'kddesa', $kddesa1])
+                            ->all();
+                    $x=array();
+                    foreach($row as $rows){
+                    foreach($rows as $key=>$value){
+                     array_push($x,$value);
+                    }}
+                    $pivotfor = " [Desa] IN ([" . implode("],[", $x) . "]) ";
                     if (count($attr) > 1) {
                         array_push($group, "desa.[nmdesa]");
                     }
@@ -351,7 +362,17 @@ class GeneratorTableForm extends Model {
                 case "Kecamatan":
                     array_push($horisontal, "kec.[nmkec] AS [Kecamatan]");
                     $join.=" JOIN [kecamatan] kec ON kec.[kdkec] = p.[kdkec] ";
-                    $pivotfor = " [Kecamatan] IN ([" . implode("],[", $kdkec1) . "]) ";
+                    $row = (new \yii\db\Query())
+                            ->select(['nmkec'])
+                            ->from('kecamatan')
+                            ->where(['in', 'kdkec', $kdkec1])
+                            ->all();
+                    $x=array();
+                    foreach($row as $rows){
+                    foreach($rows as $key=>$value){
+                     array_push($x,$value);
+                    }}
+                    $pivotfor = " [Kecamatan] IN ([" . implode("],[", $x) . "]) ";
                     if (count($attr) > 1) {
                         array_push($group, "kec.[nmkec]");
                     }
@@ -359,7 +380,17 @@ class GeneratorTableForm extends Model {
                 case "Kabupaten":
                     array_push($horisontal, "kab.[nmkab] AS [Kabupaten]");
                     $join.=" JOIN [kabupaten] kab ON kab.[kdkab] = p.[kdkab] ";
-                    $pivotfor = " [Kabupaten] IN ([" . implode("],[", $kdkab1) . "]) ";
+                    $row = (new \yii\db\Query())
+                            ->select(['nmkab'])
+                            ->from('kabupaten')
+                            ->where(['in', 'kdkab', $kdkab1])
+                            ->all();
+                    $x=array();
+                    foreach($row as $rows){
+                    foreach($rows as $key=>$value){
+                     array_push($x,$value);
+                    }}
+                    $pivotfor = " [Kabupaten] IN ([" . implode("],[", $x) . "]) ";
                     if (count($attr) > 1) {
                         array_push($group, "kab.[nmkab]");
                     }
@@ -367,8 +398,18 @@ class GeneratorTableForm extends Model {
                 case "Provinsi":
                     array_push($horisontal, "prop.[nmprop] AS [Provinsi]");
                     $join.=" JOIN [propinsi] prop ON prop.[kdprop] = p.[kdprop] ";
-                    $pivotfor = " [Provinsi] IN ([" . implode("],[", $kdprop1) . "]) ";
-                    if (count($attr) > 1) {
+                    $row = (new \yii\db\Query())
+                            ->select(['nmprop'])
+                            ->from('propinsi')
+                            ->where(['in', 'kdprop', $kdprop1])
+                            ->all();
+                    $x=array();
+                    foreach($row as $rows){
+                    foreach($rows as $key=>$value){
+                     array_push($x,$value);
+                    }}
+                    $pivotfor = " [Provinsi] IN ([" . implode("],[", $x) . "]) ";
+                                        if (count($attr) > 1) {
                         array_push($group, "prop.[nmprop]");
                     }
                     break;
@@ -376,7 +417,17 @@ class GeneratorTableForm extends Model {
                 case "Kategori":
                     array_push($horisontal, "kat.[nmkategori] AS [Kategori]");
                     $join.=" JOIN [kategori] kat ON kat.[kdkategori] = p.[kdkategori] ";
-                    $pivotfor = " [Kategori] IN ([" . implode("],[", $kdkategori1) . "]) ";
+                    $row = (new \yii\db\Query())
+                            ->select(['nmkategori'])
+                            ->from('kategori')
+                            ->where(['in', 'kdkategori', $kdkategori1])
+                            ->all();
+                    $x=array();
+                    foreach($row as $rows){
+                    foreach($rows as $key=>$value){
+                     array_push($x,$value);
+                    }}
+                    $pivotfor = " [Kategori] IN ([" . implode("],[", $x) . "]) ";
                     if (count($attr) > 1) {
                         array_push($group, "kat.[nmkategori] ");
                     }
@@ -384,12 +435,23 @@ class GeneratorTableForm extends Model {
                 case "Kbli":
                     array_push($horisontal, "kbli.[nmkbli] AS [KBLI]");
                     $join.=" JOIN [kbli] kbli ON kbli.[kdkbli] = p.[kdkbli] ";
-                    $pivotfor = " [KBLI] IN ([" . implode("],[", $kdkbli1) . "]) ";
+                    $row = (new \yii\db\Query())
+                            ->select(['nmkbli'])
+                            ->from('kbli')
+                            ->where(['in', 'kdkbli', $kdkbli1])
+                            ->all();
+                    $x=array();
+                    foreach($row as $rows){
+                    foreach($rows as $key=>$value){
+                     array_push($x,$value);
+                    }}
+                    $pivotfor = " [KBLI] IN ([" . implode("],[", $x) . "]) ";
                     if (count($attr) > 1) {
                         array_push($group, "kbli.[nmkbli]");
                     }
                     break;
                 case "Status Perusahaan":
+                    //array_push($horisontal, "kon.[kdkondisi] AS [Status Perusahaan]");
                     array_push($horisontal, "kon.[nmkondisi] AS [Status Perusahaan]");
                     $join.=" JOIN [statusperusahaan] kon ON kon.[kdkondisi] = p.[statusperusahaan] ";
                     $pivotfor = " [Status Perusahaan] IN ([" . implode("],[", $kdkondisi1) . "]) ";
@@ -400,15 +462,35 @@ class GeneratorTableForm extends Model {
                 case "Unit Statistik":
                     array_push($horisontal, "su.[nmsu] AS [Unit Statistik]");
                     $join.=" JOIN [unitstatistik] su ON su.[kdsu] = p.[unitstatistik] ";
-                    $pivotfor = " [Unit Statistik] IN ([" . implode("],[", $kdsu1) . "]) ";
-                    if (count($attr) > 1) {
+                    $row = (new \yii\db\Query())
+                            ->select(['nmsu'])
+                            ->from('unitstatistik')
+                            ->where(['in', 'kdsu', $kdsu1])
+                            ->all();
+                    $x=array();
+                    foreach($row as $rows){
+                    foreach($rows as $key=>$value){
+                     array_push($x,$value);
+                    }}
+                    $pivotfor = " [Unit Statistik] IN ([" . implode("],[", $x) . "]) ";
+                                        if (count($attr) > 1) {
                         array_push($group, "su.[nmsu]");
                     }
                     break;
                 case "Sektor Institusi":
                     array_push($horisontal, "ins.[nminstitusi] AS [Sektor Institusi]");
                     $join.=" JOIN [institusi] ins ON ins.[kdinstitusi] = p.[institusi] ";
-                    $pivotfor = " [Sektor Institusi] IN ([" . implode("],[", $kdinstitusi1) . "]) ";
+                    $row = (new \yii\db\Query())
+                            ->select(['nminstitusi'])
+                            ->from('institusi')
+                            ->where(['in', 'kdinstitusi', $kdinstitusi1])
+                            ->all();
+                    $x=array();
+                    foreach($row as $rows){
+                    foreach($rows as $key=>$value){
+                     array_push($x,$value);
+                    }}
+                    $pivotfor = " [Sektor Institusi] IN ([" . implode("],[", $x) . "]) ";
                     if (count($attr) > 1) {
                         array_push($group, "ins.[nminstitusi]");
                     }
@@ -416,7 +498,17 @@ class GeneratorTableForm extends Model {
                 case "Kepemilikan":
                     array_push($horisontal, "kep.[nmkepemilikan] AS [Kepemilikan]");
                     $join.=" JOIN [kepemilikan] kep ON kep.[kdkepemilikan] = p.[kepemilikan] ";
-                    $pivotfor = " [Kepemilikan] IN ([" . implode("],[", $kdkepemilikan1) . "]) ";
+                    $row = (new \yii\db\Query())
+                            ->select(['nmkepemilikan'])
+                            ->from('kepemilikan')
+                            ->where(['in', 'kdkepemilikan', $kdkepemilikan1])
+                            ->all();
+                    $x=array();
+                    foreach($row as $rows){
+                    foreach($rows as $key=>$value){
+                     array_push($x,$value);
+                    }}
+                    $pivotfor = " [Kepemilikan] IN ([" . implode("],[", $x) . "]) ";
                     if (count($attr) > 1) {
                         array_push($group, "kep.[nmkepemilikan]");
                     }
@@ -424,7 +516,17 @@ class GeneratorTableForm extends Model {
                 case "Jaringan Usaha":
                     array_push($horisontal, "ju.[nmjaringanusaha] AS [Jaringan Usaha]");
                     $join.=" JOIN [jaringanusaha] ju ON ju.[kdjaringanusaha] = p.[jaringanusaha] ";
-                    $pivotfor = " [Jaringan Usaha] IN ([" . implode("],[", $kdjaringanusaha1) . "]) ";
+                    $row = (new \yii\db\Query())
+                            ->select(['nmjaringanusaha'])
+                            ->from('jaringanusaha')
+                            ->where(['in', 'kdjaringanusaha', $kdjaringanusaha1])
+                            ->all();
+                    $x=array();
+                    foreach($row as $rows){
+                    foreach($rows as $key=>$value){
+                     array_push($x,$value);
+                    }}
+                    $pivotfor = " [Jaringan Usaha] IN ([" . implode("],[", $x) . "]) ";
                     if (count($attr) > 1) {
                         array_push($group, "ju.[nmjaringanusaha]");
                     }
@@ -622,30 +724,37 @@ class GeneratorTableForm extends Model {
         }
         if (count($attr) > 1) {
             //tabel biasa, variabel horisontal harus attributes
-            $tsql = "SELECT "
-                    . $field
-                    . "," . implode(",", $attrnama)
+            $tsql = "SELECT " . $field;
+            if ($field <> "") {
+                $tsql.= ",";
+            }
+
+            $tsql.= implode(",", $attrnama)
                     . " FROM [" . $tabel . "] p "
                     . $join
                     . " WHERE p.[tahun] in ('" . implode("','", $thn)
-                    . $kondisi . "')"
-                    . " GROUP BY " . implode(",", $group);
+                    . $kondisi . "')";
+            if ($group <> null) {
+                $tsql.= " GROUP BY " . implode(",", $group);
+            }
         } else {
             //T-SQL pivotting table
             $tsql = "SELECT *" . " FROM (" . "SELECT " . $field
                     . "," . implode(",", $attrnama) . " FROM [" . $tabel . "] p "
                     . $join . " WHERE p.[tahun] in ('" . implode("','", $thn)
-                    . $kondisi . "')". ") AS [tabelsumber] "
+                    . $kondisi . "')" . ") AS [tabelsumber] "
                     . "PIVOT (" . $pivotsum . "FOR "
                     . $pivotfor . ") AS [tabelbaru]";
         }
+       
+        $this->tsql = $tsql;
 
         $dataProvider = new SqlDataProvider([
             "sql" => $tsql,
         ]);
-       
+
         return $dataProvider;
-         //cek query
+        //cek query
         // return $tsql;
     }
 
@@ -1059,6 +1168,10 @@ class GeneratorTableForm extends Model {
 
     public function getNamatabel() {
         return $this->namatabel;
+    }
+
+    public function getTsql() {
+        return $this->tsql;
     }
 
 }
