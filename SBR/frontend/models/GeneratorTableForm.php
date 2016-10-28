@@ -726,9 +726,7 @@ class GeneratorTableForm extends Model {
         if (count($attr) > 1) {
             //tabel biasa, variabel horisontal harus attributes
             $tsql = "SELECT " . $field;
-            if ($field <> "") {
-                $tsql.= ",";
-            }
+            if ($field <> "") { $tsql.= ","; }
 
             $tsql.= implode(",", $attrnama)
                     . " FROM [" . $tabel . "] p "

@@ -17,6 +17,7 @@ class AppAsset extends AssetBundle {
     ];
     public $js = [
         'dragtable/jquery.dragtable.js',
+        'js/jquery.ui.touch-punch.min.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',
