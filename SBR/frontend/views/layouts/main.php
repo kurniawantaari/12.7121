@@ -38,29 +38,29 @@ AppAsset::register($this);
                 ],
             ]);
             $menuItems = [
-                ['label' => 'Home', 'url' => ['/site/index']],
+                ['label' => 'Beranda', 'url' => ['/site/index']],
                 // ['label' => 'Contact', 'url' => ['/site/contact']],
-                ['label' => 'Generate Table',
+                ['label' => 'Buat Tabel',
                     'items' => [
                         //['label' => 'Given Table', 'url' => ['/generate-table/generate-given-table']],
-                        ['label' => 'Custom Table', 'url' => ['/generate-table/generate-custom-table']],
+                        ['label' => 'Tabel Custom', 'url' => ['/generate-table/generate-custom-table']],
                     ],
                 ],
-                ['label' => 'Manage', 'visible' => Yii::$app->user->can('manageGivenTable') || Yii::$app->user->can('manageUsers'),
+                ['label' => 'Kelola', 'visible' => Yii::$app->user->can('manageGivenTable') || Yii::$app->user->can('manageUsers'),
                     'items' => [
                         [
-                            'label' => 'Dictionary',
+                            'label' => 'Daftar Istilah',
                             'url' => ['/manage-dictionary'],
                             'visible' => Yii::$app->user->can('manageGivenTable')
                         ],
                        
-                        ['label' => 'Given Table List',
+                        ['label' => 'Daftar Tabel Given',
                             'url' => ['/manage-given'],
                             'visible' => Yii::$app->user->can('manageGivenTable')
                         ],
                          '<li class="divider"></li>',
                         [
-                            'label' => 'Users',
+                            'label' => 'Pengguna',
                             'url' => ['/manage-user'],
                             'visible' => Yii::$app->user->can('manageUsers')
                         ]
@@ -68,17 +68,17 @@ AppAsset::register($this);
                 ],
             ];
             $menuItems[]=['label' => 'Daftar Istilah', 'url' => ['/site/daftaristilah']];
-            $menuItems[]=['label' => 'About', 'url' => ['/site/about']];
+            $menuItems[]=['label' => 'Tentang', 'url' => ['/site/about']];
             if (Yii::$app->user->isGuest) {
 
-                $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
+                $menuItems[] = ['label' => 'Masuk', 'url' => ['/site/login']];
             } else {
-                $submenuUser[] = ['label' => 'Profile', 'url' => ['/site/profile']];
+                $submenuUser[] = ['label' => 'Profil', 'url' => ['/site/profile']];
                 $submenuUser[] = '<li class="divider"></li>';
                 $submenuUser[] = '<li>'
                         . Html::beginForm(['/site/logout'], 'post')
                         . Html::submitButton(
-                                'Logout', ['class' => 'btn btn-link btn-block plain']
+                                'Keluar', ['class' => 'btn btn-link btn-block plain']
                         )
                         . Html::endForm()
                         . '</li>';
@@ -99,6 +99,7 @@ AppAsset::register($this);
             <div class="container">
                 <?=
                 Breadcrumbs::widget([
+                     'homeLink'=> ['url'=>'/site/index','label'=>'Beranda'], 
                     'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
                 ])
                 ?>

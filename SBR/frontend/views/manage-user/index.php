@@ -8,13 +8,13 @@ use yii\widgets\Pjax;
 /* @var $searchModel frontend\models\SearchUser */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Users';
+$this->title = 'Pengguna';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="user-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?= Html::a('Add User', ['/site/signup'], ['class' => 'btn btn-primary']) ?>
+    <?= Html::a('Tambah Pengguna', ['/site/signup'], ['class' => 'btn btn-primary']) ?>
     <?php Pjax::begin(); ?>    <?=
     GridView::widget([
         'dataProvider' => $dataProvider,

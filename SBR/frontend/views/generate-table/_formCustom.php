@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'options' => ['class' => 'form-horizontal'],
     ]);
     ?>
-    <h4 class="wizard-title">Step 1: Select Subject</h4>
+    <h4 class="wizard-title" data-toggle="tooltip" data-placement="bottom" title="Subjek adalah kelompok statistik unit usaha.">Step 1: Select Subject</h4>
     <div class="bg-info">*Subjek harus dipilih.</div>
     <?php
     echo $form->field($model, 'subject')->widget(Select2::classname(), [
@@ -60,7 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ])->label("Subject");
     ?>
     
-    <h4 class="wizard-title">Step 2: Select Attributes and Years</h4>
+    <h4 class="wizard-title" data-toggle="tooltip" data-placement="bottom" title="Atribut adalah statistik unit usaha. Tahun yaitu tahun publikasi.">Step 2: Select Attributes and Years</h4>
     <div class="bg-info">*Atribut harus dipilih, minimal 1.</div>
     <?=
     $form->field($model, 'attributes')->widget(Select2::classname(), [
@@ -95,7 +95,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ])->label("Years")
     ?>
    
-    <h4 class="wizard-title">Step 3: Select Locations</h4>
+    <h4 class="wizard-title" data-toggle="tooltip" data-placement="bottom" title="Lokasi adalah wilayah teritorial unit usaha. Jika tidak diisi, secara default akan dipilih nasional.">Step 3: Select Locations</h4>
     <div class="bg-info">*Lokasi dapat diabaikan (di-skip).</div>
         <?php
     echo $form->field($model, 'kdprop')->widget(Select2::classname(), [
@@ -190,7 +190,7 @@ if ($(this).val() == "" || $(this).val() == null) {
     ])->label("Desa");
     ?>
    
-    <h4 class="wizard-title">Step 4: Select Variables</h4>
+    <h4 class="wizard-title" data-toggle="tooltip" data-placement="bottom" title="Variabel harus dipilih lebih dari dua jika ingin dirinci dalam tabel.">Step 4: Select Variables</h4>
     <div class="bg-info">*Pilih dan filter variabel yang diinginkan.</div>
     <?=
     $form->field($model, 'kdkategori')->widget(Select2::classname(), [
@@ -317,7 +317,7 @@ if ($(this).val() == "" || $(this).val() == null) {
             + "&kddesa=" + $("#selectDesa").val()
             ,function (data) {$("#optionalVariables").html(data);});'])
     ?>
-    <h4 class="wizard-title">Step 5: Select Layout</h4>
+    <h4 class="wizard-title" data-toggle="tooltip" data-placement="bottom" title="Drag and drop variabel yang ingin dirinci dalam tabel.">Step 5: Select Layout</h4>
     <div class="bg-info">*Atur tata letak tabel yang diinginkan. Saat ini, sistem hanya dapat memproses 1 variabel horizontal.</div>
     <br>
     <div class="select-variables">
@@ -434,7 +434,8 @@ $this->registerJS('
                 "institusi:" + n + "<br>" +
                 "kepemilikan:" + o + "<br>" +
                 "jaringan usaha:" + p);
-        $("#generateTable").removeClass("disabled");
+    if(a!="" && b!=""){$("#generateTable").removeClass("disabled");}    
+    else {  $("#summaryText").html("Variabel vertikal dan horizontal harus dipilih.");}
     });
 ');
 $this->registerCss('

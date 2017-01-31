@@ -726,9 +726,7 @@ class GeneratorTableForm extends Model {
         if (count($attr) > 1) {
             //tabel biasa, variabel horisontal harus attributes
             $tsql = "SELECT " . $field;
-            if ($field <> "") {
-                $tsql.= ",";
-            }
+            if ($field <> "") { $tsql.= ","; }
 
             $tsql.= implode(",", $attrnama)
                     . " FROM [" . $tabel . "] p "
@@ -737,7 +735,7 @@ class GeneratorTableForm extends Model {
                     . $kondisi . "')";
             if ($group <> null) {
                 $tsql.= " GROUP BY " . implode(",", $group);
-                $tsql.= " ORDER BY " . implode(",", $group);
+              //  $tsql.= " ORDER BY " . implode(",", $group);
             }
         } else {
             //T-SQL pivotting table

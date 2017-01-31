@@ -1,7 +1,7 @@
 <?php
 /* @var $this yii\web\View */
 use yii\helpers\Html;
-$this->title = 'Home';
+$this->title = 'Beranda';
 ?>
 <div class="site-index">
 

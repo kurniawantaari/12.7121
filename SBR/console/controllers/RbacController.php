@@ -34,7 +34,7 @@ class RbacController extends Controller {
         $auth->addChild($admin, $sbr);
         $auth->addChild($admin, $manageUsers);
         
-                //assign default role. first one to signp is admin and second one is sbr team
+		//assign default role. first one to signp is admin and second one is sbr team
         //$auth->assign($admin, 1);
         //$auth->assign($sbr, 2);
     }

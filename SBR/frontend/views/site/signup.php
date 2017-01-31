@@ -7,7 +7,7 @@
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 
-$this->title = 'Create New User';
+$this->title = 'Buat Akun Baru';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="site-signup">
@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= $form->field($model, 'password')->passwordInput() ?>
 
                 <div class="form-group">
-                    <?= Html::submitButton('Signup', ['class' => 'btn btn-primary', 'name' => 'signup-button']) ?>
+                    <?= Html::submitButton('Daftar', ['class' => 'btn btn-primary', 'name' => 'signup-button']) ?>
                 </div>
 
             <?php ActiveForm::end(); ?>

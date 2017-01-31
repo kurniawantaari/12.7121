@@ -7,7 +7,7 @@
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 
-$this->title = 'Request password reset';
+$this->title = 'Permintaan Ubah Password';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="site-request-password-reset">
@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= $form->field($model, 'email')->textInput(['autofocus' => true]) ?>
 
                 <div class="form-group">
-                    <?= Html::submitButton('Send', ['class' => 'btn btn-primary']) ?>
+                    <?= Html::submitButton('Kirim', ['class' => 'btn btn-primary']) ?>
                 </div>
 
             <?php ActiveForm::end(); ?>
