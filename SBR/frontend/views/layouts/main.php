@@ -54,10 +54,10 @@ AppAsset::register($this);
                             'visible' => Yii::$app->user->can('manageGivenTable')
                         ],
                        
-                        ['label' => 'Daftar Tabel Given',
+                       /* ['label' => 'Daftar Tabel Given',
                             'url' => ['/manage-given'],
                             'visible' => Yii::$app->user->can('manageGivenTable')
-                        ],
+                        ],*/
                          '<li class="divider"></li>',
                         [
                             'label' => 'Pengguna',

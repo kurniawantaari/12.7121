@@ -15,12 +15,12 @@ $this->title = 'Beranda';
     <div class="body-content">
 
         <div class="row">
-            <div class="col-lg-4">
-                <h2>Custom Table</h2>
+            <div class="col-lg-6">
+                <h2>Tabel Custom</h2>
 
-                <p>Buat tabel sesuai yang Anda inginkan dengan Custom Table. Dengan ini, variabel-variabel yang Anda butuhkan dapat dimasukkan. Untuk membangkitkan tabel, pilih menu <kbd>Generate Table</kbd> dan pilih submenu <kbd>Custom Table</kbd>, atau dengan klik tombol berikut.</p>
+                <p>Buat tabel sesuai yang Anda inginkan dengan Tabel Custom. Dengan ini, variabel-variabel yang Anda butuhkan dapat dimasukkan. Untuk membangkitkan tabel, pilih menu <kbd>Buat Tabel</kbd> dan pilih submenu <kbd>Tabel Custom</kbd>, atau dengan klik tombol berikut.</p>
 
-                <p><?= Html::a('Custom Table &raquo;', ['/generate-table/generate-custom-table'], ['class' => 'btn btn-default']) ?>
+                <p><?= Html::a('Tabel Custom &raquo;', ['/generate-table/generate-custom-table'], ['class' => 'btn btn-default']) ?>
                 </p>
                 
             </div>
@@ -31,12 +31,12 @@ $this->title = 'Beranda';
 
                 <p><a class="btn btn-default" href="">Given Table &raquo;</a></p>
             </div>-->
-            <div class="col-lg-4">
+            <div class="col-lg-6">
                 <h2>SBR</h2>
 
                 <p>An SBR is a regularly updated, structured database of specific business units in a territorial area, maintained by an NSI, and used for statistical purposes(United Nations,2015). Saat ini, BPS mulai merancang sistem SBR. Untuk menuju web BPS Pusat, klik tombol berikut.</p>
 
-                <p><a class="btn btn-default" href="http://www.bps.go.id">Go To BPS HQ &raquo;</a></p>
+                <p><a class="btn btn-default" href="http://www.bps.go.id">Ke BPS RI &raquo;</a></p>
             </div>
         </div>
 

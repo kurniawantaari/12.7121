@@ -31,7 +31,7 @@ use yii\widgets\ActiveForm;
             <div class="panel-heading" role="tab" id="headingEmail">
                 <a class="collapsed" role="button" data-toggle="collapse" data-parent="#user-profile" href="#collapseEmail" aria-expanded="false" aria-controls="collapseEmail">
                     <h4 class="panel-title">
-                        <b>E-mail:</b><i class="col-sm-offset-1"><?php echo $model->getOldAttribute("email"); ?></i>
+                        <b>Surel:</b><i class="col-sm-offset-1"><?php echo $model->getOldAttribute("email"); ?></i>
                     </h4>          
                 </a>
             </div>
@@ -57,7 +57,7 @@ use yii\widgets\ActiveForm;
                 <div class="panel-body">
                     <?php $idSelectedUser = $model->getOldAttribute("id");
                                   ?>
-                     <?=Html::a('Change your password?', ['manage-user/change-password','id' =>$idSelectedUser]) ?>
+                     <?=Html::a('Ubah password?', ['manage-user/change-password','id' =>$idSelectedUser]) ?>
 
                 </div>
             </div>

@@ -13,17 +13,11 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="site-login">
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>Please fill out the following fields to login:</p>
+    <p>Isi data berikut untuk masuk:</p>
 
     <div class="row">
-        <div class="col-lg-5">
-            <div class="well">
-                <p>*Untuk evaluasi, Anda dapat login dengan menggunakan username dan password berikut.</p>
-            <p>*Sebagai admin: username=admin, password=adminmin</p>
-            <p>*Sebagai tim sbr: username=sbr, password=sbrsbr</p>
-            <p>*Sebagai pengguna umum: username=user, password=userser</p>
-            </div>
-               
+        <div class="col-lg-6">
+                          
  <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>           
 
                 <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
@@ -33,14 +27,20 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= $form->field($model, 'rememberMe')->checkbox() ?>
 
                 <div style="color:#999;margin:1em 0">
-                    If you forgot your password you can <?= Html::a('reset it', ['site/request-password-reset']) ?>.
+                    Lupa password? Silakan <?= Html::a('reset password', ['site/request-password-reset']) ?> Anda.
                 </div>
 
                 <div class="form-group">
-                    <?= Html::submitButton('Login', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
+                    <?= Html::submitButton('Masuk', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
                 </div>
 
             <?php ActiveForm::end(); ?>
         </div>
+        <div class="well col-lg-6">
+                <p>*Untuk evaluasi, Anda dapat login dengan menggunakan username dan password berikut.</p>
+            <p>*Sebagai admin: username=admin, password=adminmin</p>
+            <p>*Sebagai tim sbr: username=sbr, password=sbrsbr</p>
+            <p>*Sebagai pengguna umum: username=user, password=userser</p>
+            </div>
     </div>
 </div>

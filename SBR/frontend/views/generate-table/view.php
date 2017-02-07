@@ -4,13 +4,13 @@
 use yii\helpers\Html;
 use kartik\grid\GridView;
 
-$this->title = 'Result Table';
+$this->title = 'Hasil Tabel';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <h1><?= Html::encode($this->title) ?></h1>
 <div class="container">   
-    
-        <?= Html::a('New Custom Table', ['/generate-table/generate-custom-table'], ['class' => 'btn btn-primary']) ?>
+
+    <?= Html::a('Buat Baru', ['/generate-table/generate-custom-table'], ['class' => 'btn btn-primary']) ?>
     <br>
     <br>
     <?=
@@ -22,7 +22,12 @@ $this->params['breadcrumbs'][] = $this->title;
         'resizableColumns' => true,
         'headerRowOptions' => ['class' => 'kartik-sheet-style'],
         'toolbar' => ['{export}',],
-        'export' => ['fontAwesome' => true,],
+        
+        
+        'export' => ['fontAwesome' => true,
+            'icon' => true,
+            'label' => '<span class="glyphicon glyphicon-download-alt"></span>',
+        ],
         'bordered' => true,
         'striped' => true,
         'responsive' => true,
@@ -35,12 +40,14 @@ $this->params['breadcrumbs'][] = $this->title;
         'summary' => '',
     ])
     ?>
-<?php  
+    <?php
 //testing only
 //print_r($tsql);
-$this->registerJs("
+    $this->registerJs("
        $('table').dragtable();
+       
 ");
 
+    $this->registerJsFile('@web/js/sorttable.js');
     ?>
 </div>

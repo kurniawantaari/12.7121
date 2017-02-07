@@ -18,8 +18,17 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            'term',
-            'description',
+                    [
+                'label' => 'Istilah',
+                'encodeLabel' => 'false',
+                'attribute' => 'term',
+            ],
+        [
+                'label' => 'Deskripsi',
+                'encodeLabel' => 'false',
+                'attribute' => 'description',
+            ],
+            
         ],
         'bordered' => true,
         'striped' => true,

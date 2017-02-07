@@ -21,10 +21,38 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-            'username',
-            'email:email',
-            'status',
-            ['class' => 'yii\grid\ActionColumn'],
+              [
+                'label' => 'Username',
+                'encodeLabel' => 'false',
+                'attribute' => 'username',
+            ],
+        [
+                'label' => 'Surel',
+                'encodeLabel' => 'false',
+                'attribute' => 'email',
+            'format'=>'email'
+            ],
+        [
+                'label' => 'Status',
+                'encodeLabel' => 'false',
+                'attribute' => 'status',
+            ],
+                     [
+    'class' => 'yii\grid\ActionColumn',
+    'template' => '{view} {update} {delete}',
+    'buttons' => [
+        'delete' => function($url, $model){
+            return Html::a('<span class="glyphicon glyphicon-trash"></span>', ['delete', 'id' => $model->id], [
+                'class' => '',
+                'data' => [
+                    'confirm' => 'Apakah Anda yakin ingin menghapus akun ini?.',
+                    'method' => 'post',
+                ],
+            ]);
+        }
+    ]
+],
+            
         ],
     ]);
     ?>

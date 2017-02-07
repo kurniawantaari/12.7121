@@ -6,8 +6,8 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model frontend\models\Dictionary */
 
-$this->title = 'Create Dictionary';
-$this->params['breadcrumbs'][] = ['label' => 'Dictionaries', 'url' => ['index']];
+$this->title = 'Buat Istilah';
+$this->params['breadcrumbs'][] = ['label' => 'Daftar Istilah', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="dictionary-create">

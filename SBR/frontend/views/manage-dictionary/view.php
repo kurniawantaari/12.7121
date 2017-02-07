@@ -6,8 +6,8 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model frontend\models\Dictionary */
 
-$this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Dictionaries', 'url' => ['index']];
+$this->title = $model->term;
+$this->params['breadcrumbs'][] = ['label' => 'Daftar Istilah', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="dictionary-view">
@@ -15,23 +15,35 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
+        <?= Html::a('Ubah', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?=
+        Html::a('Hapus', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
+                'confirm' => 'Apakah Anda yakin ingin menghapus istilah ini?',
                 'method' => 'post',
             ],
-        ]) ?>
+        ])
+        ?>
     </p>
 
-    <?= DetailView::widget([
+    <?=
+    DetailView::widget([
         'model' => $model,
         'attributes' => [
             'id',
-            'term',
-            'description',
+                [
+                'label' => 'Istilah',
+                'encodeLabel' => 'false',
+                'attribute' => 'term',
+            ],
+                [
+                'label' => 'Deskripsi',
+                'encodeLabel' => 'false',
+                'attribute' => 'description',
+            ],
         ],
-    ]) ?>
+    ])
+    ?>
 
 </div>

@@ -5,10 +5,10 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model frontend\models\Dictionary */
 
-$this->title = 'Update Dictionary: ' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Dictionaries', 'url' => ['index']];
+$this->title = 'Ubah Daftar Istilah: ' . $model->id;
+$this->params['breadcrumbs'][] = ['label' => 'Daftar Istilah', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->params['breadcrumbs'][] = 'Ubah';
 ?>
 <div class="dictionary-update">
 

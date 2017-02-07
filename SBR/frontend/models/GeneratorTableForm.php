@@ -756,7 +756,8 @@ class GeneratorTableForm extends Model {
         $this->tsql = $tsql;
 
         $dataProvider = new SqlDataProvider([
-            "sql" => $tsql,
+            'sql' => $tsql,
+            
         ]);
 
         return $dataProvider;

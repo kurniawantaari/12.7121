@@ -15,14 +15,14 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Ubah', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
         <?php
         if (Yii::$app->user->can('manageUsers')) {
-            Html::a('Delete', ['delete', 'id' => $model->id], [
+            Html::a('Hapus', ['delete', 'id' => $model->id], [
                 'class' => 'btn btn-danger',
                 'data' => [
-                    'confirm' => 'Are you sure you want to delete this item?',
+                    'confirm' => 'Apakah Anda yakin akan menghapus akun ini?',
                     'method' => 'post',
                 ],
             ]);
@@ -33,10 +33,25 @@ $this->params['breadcrumbs'][] = $this->title;
     <?=
     DetailView::widget([
         'model' => $model,
+       
+        
         'attributes' => [
-            'username',
-            'email:email',
-            'status',
+            [
+                'label' => 'Username',
+                'encodeLabel' => 'false',
+                'attribute' => 'username',
+            ],
+        [
+                'label' => 'Surel',
+                'encodeLabel' => 'false',
+                'attribute' => 'email',
+            'format'=>'email'
+            ],
+        [
+                'label' => 'Status',
+                'encodeLabel' => 'false',
+                'attribute' => 'status',
+            ],
         ],
     ])
     ?>
